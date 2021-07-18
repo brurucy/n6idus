@@ -112,6 +112,24 @@ class SortedSet {
       item
     );
   }
+  #locate(nth) {
+    if (nth >= this.length || nth < 0) {
+      return undefined;
+    } else {
+      let firstLevelIndex = binaryInsertAt(
+        this.index,
+        (x, y) => {
+          return x <= y;
+        },
+        nth
+      );
+      let offset = 0;
+      if (firstLevelIndex !== 0) {
+        offset = this.index[firstLevelIndex - 1];
+      }
+      return [firstLevelIndex, nth - offset];
+    }
+  }
   add(item) {
     let firstLevelIndex = this.#bucketInsertSearch(this.cmp, item);
     let candidateBucket = [];
@@ -135,6 +153,17 @@ class SortedSet {
     }
     this.length = this.length + 1;
   }
+  get(nth) {
+    const indexes = this.#locate(nth);
+    let [firstLevelIndex, secondLevelIndex] = [0, 0];
+    if (indexes === undefined) {
+      return undefined;
+    } else {
+      [firstLevelIndex, secondLevelIndex] = indexes;
+      return this.buckets[firstLevelIndex][secondLevelIndex];
+    }
+  }
+  // deletes by value
   delete(item) {
     let firstLevelIndex = this.#bucketSearch(this.cmp, item);
     if (this.buckets[firstLevelIndex] === undefined) {
@@ -155,10 +184,35 @@ class SortedSet {
         this.index[i] = this.index[i] - 1;
       }
       this.length = this.length - 1;
-      return true;
+      return item;
     } else {
-      return false;
+      return undefined;
+    }
+  }
+  // deletes by position
+  remove(nth) {
+    const indexes = this.#locate(nth);
+    let [firstLevelIndex, secondLevelIndex] = [0, 0];
+    if (indexes === undefined) {
+      return undefined;
+    } else {
+      [firstLevelIndex, secondLevelIndex] = indexes;
+      const item = this.buckets[firstLevelIndex][secondLevelIndex];
+      this.buckets[firstLevelIndex] = this.buckets[firstLevelIndex].filter(
+        (values) => !(this.cmp(item, values) && this.cmp(values, item))
+      );
+      if (this.buckets[firstLevelIndex].length === 0) {
+        this.index[firstLevelIndex] = 0;
+        this.index = this.index.filter((idx) => idx > 0);
+        if (this.length !== 1) {
+          this.buckets = this.buckets.filter((bucket) => bucket.length);
+        }
+      }
+      for (let i = firstLevelIndex; i < this.index.length; i++) {
+        this.index[i] = this.index[i] - 1;
+      }
+      this.length = this.length - 1;
     }
   }
 }
-export { SortedSet, binarySearch, cmpMax, binaryInsertAt, getSortedMax };
+export { SortedSet, binarySearch, binaryInsertAt, getSortedMax };

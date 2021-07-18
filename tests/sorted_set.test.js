@@ -199,3 +199,47 @@ test('Remove from sorted set, index validation', () => {
   sortedSet.delete([1, 9, 9]);
   expect(sortedSet.index).toEqual([]);
 });
+
+test('Get nth from sorted set', () => {
+  let sortedSet = new SortedSet(leq, 3);
+
+  sortedSet.add([1, 2, 3]);
+  sortedSet.add([1, 2, 2]);
+  sortedSet.add([1, 6, 7]);
+  sortedSet.add([1, 3, 5]);
+  sortedSet.add([1, 2, 4]);
+  sortedSet.add([1, 9, 9]);
+
+  expect(sortedSet.get(0)).toEqual([1, 2, 2]);
+  expect(sortedSet.get(1)).toEqual([1, 2, 3]);
+  expect(sortedSet.get(2)).toEqual([1, 2, 4]);
+  expect(sortedSet.get(3)).toEqual([1, 3, 5]);
+  expect(sortedSet.get(4)).toEqual([1, 6, 7]);
+  expect(sortedSet.get(5)).toEqual([1, 9, 9]);
+});
+
+test('Delete nth from sorted set', () => {
+  let sortedSet = new SortedSet(leq, 3);
+
+  sortedSet.add([1, 2, 3]);
+  sortedSet.add([1, 2, 2]);
+  sortedSet.add([1, 6, 7]);
+  sortedSet.add([1, 3, 5]);
+  sortedSet.add([1, 2, 4]);
+  sortedSet.add([1, 9, 9]);
+
+  sortedSet.remove(0);
+  expect(sortedSet.get(0)).toEqual([1, 2, 3]);
+  sortedSet.remove(4);
+  expect(sortedSet.get(3)).toEqual([1, 6, 7]);
+  sortedSet.remove(3);
+  expect(sortedSet.get(2)).toEqual([1, 3, 5]);
+  sortedSet.remove(2);
+  expect(sortedSet.get(1)).toEqual([1, 2, 4]);
+  sortedSet.remove(1);
+  expect(sortedSet.get(0)).toEqual([1, 2, 3]);
+  sortedSet.remove(0);
+  expect(sortedSet.get(0)).toEqual(undefined);
+  expect(sortedSet.buckets).toEqual([[]]);
+  expect(sortedSet.index).toEqual([]);
+});

@@ -6,8 +6,9 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
+      "disableOptimisticBPs": true,
       "args": [
-	"--inspect-brk",
+        "--inspect-brk",
         "--experimental-vm-modules",
         "${workspaceFolder}/node_modules/jest/bin/jest.js"
       ],
