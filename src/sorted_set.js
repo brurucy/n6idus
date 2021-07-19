@@ -1,76 +1,4 @@
-const binaryInsertAt = (A, cmp, item) => {
-  let low = 0;
-  let high = A.length;
-  let mid = 0;
-  while (low < high) {
-    mid = (low + high) >>> 1;
-    let midVal = A[mid];
-    if (midVal !== undefined && cmp(midVal, item)) {
-      low = mid + 1;
-    } else {
-      high = mid;
-    }
-  }
-  return high;
-};
-
-const binarySearchAt = (A, cmp, item) => {
-  let low = 0;
-  let high = A.length;
-  let mid = 0;
-  while (low < high) {
-    mid = (low + high) >>> 1;
-    let midVal = A[mid];
-    if (midVal !== undefined && cmp(midVal, item) && !cmp(item, midVal)) {
-      low = mid + 1;
-    } else {
-      high = mid;
-    }
-  }
-  return high;
-};
-
-const binarySearch = (A, cmp, item) => {
-  let low = 0;
-  let high = A.length;
-  let mid = 0;
-  while (low < high) {
-    mid = (low + high) >>> 1;
-    let midVal = A[mid];
-    if (midVal !== undefined && cmp(midVal, item) && !cmp(item, midVal)) {
-      low = mid + 1;
-    } else {
-      high = mid;
-    }
-  }
-  if (cmp(A[high], item) && cmp(item, A[high])) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-const getSortedMax = (A) => {
-  if (A.length === 0) {
-    return undefined;
-  } else {
-    return A[A.length - 1];
-  }
-};
-
-const cmpMax = (x, y, cmp) => {
-  if (x.length === 0 && y.length === 0) {
-    return true;
-  } else {
-    if (Array.isArray(x[0]) && Array.isArray(y[0])) {
-      return cmp(getSortedMax(x), getSortedMax(y));
-    } else if (Array.isArray(x[0]) && !Array.isArray(y[0])) {
-      return cmp(getSortedMax(x), y);
-    } else {
-      return cmp(x, getSortedMax(y));
-    }
-  }
-};
+import { SortedArraySet } from './sorted_array.js'
 
 class SortedSet {
   bucketSize = 1000;
@@ -79,50 +7,73 @@ class SortedSet {
   length = 0;
   constructor(cmp, bucketSize) {
     this.cmp = cmp;
-    this.buckets[0] = [];
+    this.buckets[0] = new SortedArraySet(this.cmp);
     this.bucketSize = bucketSize;
   }
-  #balance(index) {
-    const half = Math.ceil(this.buckets[index].length / 2);
-    const newBucket = this.buckets[index].slice(-half);
-    this.buckets[index] = this.buckets[index].slice(0, half);
-    this.buckets.splice(index + 1, 0, newBucket);
+  #balance(firstLevelIndex) {
+    const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
+    const newBucketContents = this.buckets[firstLevelIndex].bucket.slice(-half);
+    const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(0, half);
+    const newArraySet = new SortedArraySet(this.cmp);
+    this.buckets[firstLevelIndex] = new SortedArraySet(this.cmp);
+    for (const item of newBucketContents) {
+      newArraySet.add(item);
+    }
+    for (const item of oldBucketContents) {
+      this.buckets[firstLevelIndex].add(item);
+    }
+    this.buckets.splice(firstLevelIndex + 1, 0, newArraySet);
     this.index = [];
     let accumulatedLength = 0;
     for (let i = 0; i < this.buckets.length; i++) {
-      accumulatedLength = accumulatedLength + this.buckets[i].length;
+      accumulatedLength = accumulatedLength + this.buckets[i].bucket.length;
       this.index[i] = accumulatedLength;
     }
   }
-  #bucketInsertSearch(cmp, item) {
-    return binaryInsertAt(
-      this.buckets,
-      (x, y) => {
-        return cmpMax(x, y, this.cmp);
-      },
-      item
-    );
+  #bucketIndexOf(item) {
+    let low = 0,
+        high = this.buckets.length,
+        mid = 0;
+
+    while (low < high) {
+      mid = (low + high) >>> 1;
+      let midVal = this.buckets[mid].max;
+      if (
+          midVal !== undefined &&
+          this.cmp(midVal, item) &&
+          !this.cmp(item, midVal)
+      ) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+    return high;
   }
-  #bucketSearch(cmp, item) {
-    return binarySearchAt(
-      this.buckets,
-      (x, y) => {
-        return cmpMax(x, y, this.cmp);
-      },
-      item
-    );
+  #indexIndexOf(nth) {
+    let low = 0,
+        high = this.buckets.length,
+        mid = 0;
+
+    while (low < high) {
+      mid = (low + high) >>> 1;
+      let midVal = this.index[mid];
+      if (
+          midVal !== undefined &&
+          midVal <= nth
+      ) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+    return high;
   }
   #locate(nth) {
     if (nth >= this.length || nth < 0) {
       return undefined;
     } else {
-      let firstLevelIndex = binaryInsertAt(
-        this.index,
-        (x, y) => {
-          return x <= y;
-        },
-        nth
-      );
+      let firstLevelIndex = this.#indexIndexOf(nth);
       let offset = 0;
       if (firstLevelIndex !== 0) {
         offset = this.index[firstLevelIndex - 1];
@@ -131,65 +82,63 @@ class SortedSet {
     }
   }
   add(item) {
-    let firstLevelIndex = this.#bucketInsertSearch(this.cmp, item);
-    let candidateBucket = [];
+    let firstLevelIndex = this.#bucketIndexOf(item);
     if (this.buckets[firstLevelIndex] === undefined) {
       firstLevelIndex = firstLevelIndex - 1;
-      candidateBucket = this.buckets[firstLevelIndex];
-    } else {
-      candidateBucket = this.buckets[firstLevelIndex];
     }
-    const secondLevelIndex = binaryInsertAt(candidateBucket, this.cmp, item);
-    this.buckets[firstLevelIndex].splice(secondLevelIndex, 0, item);
-    if (this.buckets[firstLevelIndex].length > this.bucketSize) {
-      this.#balance(firstLevelIndex);
+    const add = this.buckets[firstLevelIndex].add(item);
+    if (add === undefined) {
+      return undefined
     } else {
-      if (this.index[firstLevelIndex] === undefined) {
-        this.index[firstLevelIndex] = 0;
+      if (this.buckets[firstLevelIndex].bucket.length > this.bucketSize) {
+        this.#balance(firstLevelIndex);
+      } else {
+        if (this.index[firstLevelIndex] === undefined) {
+          this.index[firstLevelIndex] = 0;
+        }
+        for (let i = firstLevelIndex; i < this.index.length; i++) {
+          this.index[i] = this.index[i] + 1;
+        }
       }
-      for (let i = firstLevelIndex; i < this.index.length; i++) {
-        this.index[firstLevelIndex] = this.index[firstLevelIndex] + 1;
-      }
+      this.length = this.length + 1;
     }
-    this.length = this.length + 1;
   }
-  get(nth) {
+  select(nth) {
     const indexes = this.#locate(nth);
     let [firstLevelIndex, secondLevelIndex] = [0, 0];
     if (indexes === undefined) {
       return undefined;
     } else {
       [firstLevelIndex, secondLevelIndex] = indexes;
-      return this.buckets[firstLevelIndex][secondLevelIndex];
+      return this.buckets[firstLevelIndex].select(secondLevelIndex);
     }
   }
-  // deletes by value
-  delete(item) {
-    let firstLevelIndex = this.#bucketSearch(this.cmp, item);
+  has(item) {
+    let firstLevelIndex = this.#bucketIndexOf(item);
     if (this.buckets[firstLevelIndex] === undefined) {
       firstLevelIndex = firstLevelIndex - 1;
     }
-    if (binarySearch(this.buckets[firstLevelIndex], this.cmp, item)) {
-      this.buckets[firstLevelIndex] = this.buckets[firstLevelIndex].filter(
-        (values) => !(this.cmp(item, values) && this.cmp(values, item))
-      );
-      if (this.buckets[firstLevelIndex].length === 0) {
-        this.index[firstLevelIndex] = 0;
-        this.index = this.index.filter((idx) => idx > 0);
-        if (this.length !== 1) {
-          this.buckets = this.buckets.filter((bucket) => bucket.length);
-        }
+    return this.buckets[firstLevelIndex].has(item);
+  }
+  delete(item) {
+    let firstLevelIndex = this.#bucketIndexOf(item);
+    if (this.buckets[firstLevelIndex] === undefined) {
+      firstLevelIndex = firstLevelIndex - 1;
+    }
+    const deletion = this.buckets[firstLevelIndex].delete(item);
+    if (deletion === undefined) {
+      return undefined
+    } else {
+      if (this.length !== 1 && this.buckets[firstLevelIndex].bucket.length === 0) {
+        this.buckets.splice(firstLevelIndex, 1);
       }
       for (let i = firstLevelIndex; i < this.index.length; i++) {
         this.index[i] = this.index[i] - 1;
       }
+      this.index = this.index.filter((x) => x > 0);
       this.length = this.length - 1;
-      return item;
-    } else {
-      return undefined;
     }
   }
-  // deletes by position
   remove(nth) {
     const indexes = this.#locate(nth);
     let [firstLevelIndex, secondLevelIndex] = [0, 0];
@@ -197,22 +146,8 @@ class SortedSet {
       return undefined;
     } else {
       [firstLevelIndex, secondLevelIndex] = indexes;
-      const item = this.buckets[firstLevelIndex][secondLevelIndex];
-      this.buckets[firstLevelIndex] = this.buckets[firstLevelIndex].filter(
-        (values) => !(this.cmp(item, values) && this.cmp(values, item))
-      );
-      if (this.buckets[firstLevelIndex].length === 0) {
-        this.index[firstLevelIndex] = 0;
-        this.index = this.index.filter((idx) => idx > 0);
-        if (this.length !== 1) {
-          this.buckets = this.buckets.filter((bucket) => bucket.length);
-        }
-      }
-      for (let i = firstLevelIndex; i < this.index.length; i++) {
-        this.index[i] = this.index[i] - 1;
-      }
-      this.length = this.length - 1;
+      return this.buckets[firstLevelIndex].select(secondLevelIndex);
     }
   }
 }
-export { SortedSet, binarySearch, binaryInsertAt, getSortedMax };
+export { SortedSet };

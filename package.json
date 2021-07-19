@@ -1,0 +1,21 @@
+{
+  "name": "sortedset-js",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A very efficient sorted set implementation",
+  "main": "bench.js",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
+  "author": "Rucy",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-google": "^0.14.0",
+    "jest": "^27.0.6"
+  },
+  "dependencies": {
+    "benchmark": "^2.1.4",
+    "microtime": "^3.0.0"
+  }
+}

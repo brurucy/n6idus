@@ -1,10 +1,19 @@
-import { binarySearch, binaryInsertAt, SortedSet } from '../src/mod';
+import { SortedSet } from '../src/mod';
+
+const getShuffledArr = arr => {
+  const newArr = arr.slice()
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const rand = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
+  }
+  return newArr
+};
 
 const leq = (a, b) => {
   let isItLeq = true;
   if (!(a === undefined || b === undefined)) {
     for (let i = 0; i < a.length; i++) {
-      if ((a[i] <= b[i]) & (b[i] <= a[i])) {
+      if ((a[i] <= b[i]) && (b[i] <= a[i])) {
         continue;
       } else {
         isItLeq = a[i] <= b[i];
@@ -15,90 +24,14 @@ const leq = (a, b) => {
   return isItLeq;
 };
 
-const tripleArrEq = (A, B) => {
-  let isItEq = true;
-  if (A.length !== B.length) {
-    isItEq = false;
-    return isItEq;
-  } else {
-    for (let i = 0; i < A.length; i++) {
-      if (leq(A[i], B[i]) & leq(B[i], A[i])) {
-        continue;
-      } else {
-        isItEq = false;
-        return isItEq;
-      }
-    }
-  }
-  return isItEq;
-};
-
-// Here we check for key equalities
-const keyLeq = (a, b) => {
-  let isItLeq = true;
-  if (!Array.isArray(a['0'])) {
-    isItLeq = a['0'] <= b['0'];
-  } else {
-    for (let i = 0; i < a['0'].length; i++) {
-      if ((a['0'][i] <= b['0'][i]) & (b['0'][i] <= a['0'][i])) {
-        continue;
-      } else {
-        isItLeq = a['0'][i] <= b['0'][i];
-        return isItLeq;
-      }
-    }
-  }
-  return isItLeq;
-};
-
-test('Bisect [[1, 3, 5], [2, 1, 3], [3, 6, 7]] [1, 7, 5]', () => {
-  const tripleArr = [
-    [1, 3, 5],
-    [2, 1, 3],
-    [3, 6, 7],
-  ];
-
-  const bisection = binaryInsertAt(tripleArr, leq, [1, 7, 5]);
-
-  expect(bisection).toEqual(1);
-});
-
-test('Bisect [[1, 3, 5], [2, 1, 3], [3, 6, 7]] [2, 1, 3]', () => {
-  const tripleArr = [
-    [1, 3, 5],
-    [2, 1, 3],
-    [3, 6, 7],
-  ];
-
-  const bisection = binarySearch(tripleArr, leq, [2, 1, 3]);
-
-  expect(bisection).toEqual(true);
-});
-
-test('Bisect [[1, 3, 5], [2, 1, 4], [3, 6, 7]] [2, 1, 3]', () => {
-  const tripleArr = [
-    [1, 3, 5],
-    [2, 1, 4],
-    [3, 6, 7],
-  ];
-
-  const bisection = binarySearch(tripleArr, leq, [2, 1, 3]);
-
-  expect(bisection).toEqual(false);
-});
-
 test('add to sorted set, simple', () => {
   let sortedSet = new SortedSet(leq, 3);
 
   sortedSet.add([1, 2, 3]);
   sortedSet.add([1, 2, 2]);
 
-  expect(sortedSet.buckets).toEqual([
-    [
-      [1, 2, 2],
-      [1, 2, 3],
-    ],
-  ]);
+  expect(sortedSet.buckets[0].bucket[0]).toEqual([1, 2, 2]);
+  expect(sortedSet.buckets[0].bucket[1]).toEqual([1, 2, 3]);
 });
 
 test('add to sorted set, with balance', () => {
@@ -111,23 +44,101 @@ test('add to sorted set, with balance', () => {
   sortedSet.add([1, 2, 4]);
   sortedSet.add([1, 9, 9]);
 
-  expect(sortedSet.buckets).toEqual([
-    [
-      [1, 2, 2],
-      [1, 2, 3],
-    ],
-    [
-      [1, 2, 4],
-      [1, 3, 5],
-    ],
-    [
-      [1, 6, 7],
-      [1, 9, 9],
-    ],
-  ]);
+  expect(sortedSet.buckets[0].bucket[0]).toEqual([1, 2, 2]);
+  expect(sortedSet.buckets[0].bucket[1]).toEqual([1, 2, 3]);
+  expect(sortedSet.buckets[1].bucket[0]).toEqual([1, 2, 4]);
+  expect(sortedSet.buckets[1].bucket[1]).toEqual([1, 3, 5]);
+  expect(sortedSet.buckets[2].bucket[0]).toEqual([1, 6, 7]);
+  expect(sortedSet.buckets[2].bucket[1]).toEqual([1, 9, 9]);
 });
 
+
 test('add to sorted set, index validation', () => {
+  let sortedSet = new SortedSet(leq, 3);
+
+  sortedSet.add([1, 2, 3]);
+  expect(sortedSet.index).toEqual([1]);
+  sortedSet.add([1, 2, 2]);
+  expect(sortedSet.index).toEqual([2]);
+  sortedSet.add([1, 6, 7]);
+  expect(sortedSet.index).toEqual([3]);
+  sortedSet.add([1, 3, 5]);
+  expect(sortedSet.index).toEqual([2, 4]);
+  sortedSet.add([1, 2, 4]);
+  expect(sortedSet.index).toEqual([2, 5]);
+  sortedSet.add([1, 9, 9]);
+  expect(sortedSet.index).toEqual([2, 4, 6]);
+});
+
+test('add to sorted set, order and length assurance', () => {
+  const sortedSet = new SortedSet((x, y) => { return x <= y }, 10);
+  let dataArr = new Array(1000);
+  for (let i = 0; i < dataArr.length; i++) {
+    dataArr[i] = i;
+  }
+  dataArr = getShuffledArr(dataArr);
+
+  for (const item of dataArr) {
+    sortedSet.add(item)
+  }
+
+  expect(sortedSet.length).toEqual(1000);
+
+  let curr;
+  let last;
+  for (let i = 0; i < sortedSet.buckets.length; i++) {
+    last = sortedSet.buckets[i].bucket[0];
+    for (let j = 1; j < sortedSet.buckets[i].bucket.length; j++) {
+      curr = sortedSet.buckets[i].bucket[j];
+      expect(curr > last).toEqual(true);
+      last = curr;
+    }
+  }
+})
+
+test('getting the i-th element', () => {
+  let sortedSet = new SortedSet(leq, 3);
+
+  sortedSet.add([1, 2, 3]);
+  sortedSet.add([1, 2, 2]);
+  sortedSet.add([1, 6, 7]);
+  sortedSet.add([1, 3, 5]);
+  sortedSet.add([1, 2, 4]);
+  sortedSet.add([1, 9, 9]);
+
+  expect(sortedSet.select(0)).toEqual([1, 2, 2]);
+  expect(sortedSet.select(1)).toEqual([1, 2, 3]);
+  expect(sortedSet.select(2)).toEqual([1, 2, 4]);
+  expect(sortedSet.select(3)).toEqual([1, 3, 5]);
+  expect(sortedSet.select(4)).toEqual([1, 6, 7]);
+  expect(sortedSet.select(5)).toEqual([1, 9, 9]);
+
+})
+
+test('has', () => {
+  let sortedSet = new SortedSet(leq, 3);
+
+  sortedSet.add([1, 2, 3]);
+  sortedSet.add([1, 2, 2]);
+  sortedSet.add([1, 6, 7]);
+  sortedSet.add([1, 3, 5]);
+  sortedSet.add([1, 2, 4]);
+  sortedSet.add([1, 9, 9]);
+
+  expect(sortedSet.has([1, 2, 2])).toEqual(true);
+  expect(sortedSet.has([1, 2, 3])).toEqual(true);
+  expect(sortedSet.has([1, 2, 4])).toEqual(true);
+  expect(sortedSet.has([1, 3, 5])).toEqual(true);
+  expect(sortedSet.has([1, 6, 7])).toEqual(true);
+  expect(sortedSet.has([1, 9, 9])).toEqual(true);
+
+  expect(sortedSet.has([1, 2, 9])).toEqual(false);
+  expect(sortedSet.has([1, 15, 1])).toEqual(false);
+  expect(sortedSet.has([1, 1, 1])).toEqual(false);
+
+})
+
+test('Delete from sorted set', () => {
   let sortedSet = new SortedSet(leq, 3);
 
   sortedSet.add([1, 2, 3]);
@@ -138,27 +149,41 @@ test('add to sorted set, index validation', () => {
   sortedSet.add([1, 9, 9]);
 
   expect(sortedSet.index).toEqual([2, 4, 6]);
-});
-
-test('Remove from sorted set', () => {
-  let sortedSet = new SortedSet(leq, 3);
-
-  sortedSet.add([1, 2, 3]);
-  sortedSet.add([1, 2, 2]);
-  sortedSet.add([1, 6, 7]);
-  sortedSet.add([1, 3, 5]);
-  sortedSet.add([1, 2, 4]);
-  sortedSet.add([1, 9, 9]);
-
+  expect(sortedSet.has([1, 2, 3])).toEqual(true);
   sortedSet.delete([1, 2, 3]);
-  sortedSet.delete([1, 2, 2]);
-  sortedSet.delete([1, 6, 7]);
-  sortedSet.delete([1, 3, 5]);
-  sortedSet.delete([1, 2, 4]);
-  sortedSet.delete([1, 9, 9]);
+  expect(sortedSet.has([1, 2, 3])).toEqual(false);
 
-  expect(sortedSet.buckets).toEqual([[]]);
+  expect(sortedSet.index).toEqual([1, 3, 5]);
+  expect(sortedSet.has([1, 6, 7])).toEqual(true);
+  sortedSet.delete([1, 6, 7]);
+  expect(sortedSet.has([1, 6, 7])).toEqual(false);
+
+  expect(sortedSet.index).toEqual([1, 3, 4]);
+  expect(sortedSet.has([1, 2, 2])).toEqual(true);
+  sortedSet.delete([1, 2, 2]);
+  expect(sortedSet.has([1, 2, 2])).toEqual(false);
+
+  expect(sortedSet.index).toEqual([2, 3]);
+  expect(sortedSet.has([1, 2, 4])).toEqual(true);
+  sortedSet.delete([1, 2, 4]);
+  expect(sortedSet.has([1, 2, 4])).toEqual(false);
+
+  expect(sortedSet.index).toEqual([1, 2]);
+  expect(sortedSet.has([1, 3, 5])).toEqual(true);
+  sortedSet.delete([1, 3, 5]);
+  expect(sortedSet.has([1, 3, 5])).toEqual(false);
+
+  expect(sortedSet.index).toEqual([1]);
+  expect(sortedSet.has([1, 9, 9])).toEqual(true)
+  sortedSet.delete([1, 9, 9]);
+  expect(sortedSet.has([1, 9, 9])).toEqual(false);
+
+  expect(sortedSet.index).toEqual([]);
+  expect(sortedSet.buckets[0].bucket).toEqual([]);
+
 });
+
+/*
 
 test('Remove from sorted set, index validation', () => {
   let sortedSet = new SortedSet(leq, 3);
@@ -243,3 +268,4 @@ test('Delete nth from sorted set', () => {
   expect(sortedSet.buckets).toEqual([[]]);
   expect(sortedSet.index).toEqual([]);
 });
+*/
