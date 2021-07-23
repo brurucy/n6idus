@@ -6,7 +6,7 @@ let BTreeSet = BTree.default;
 import Microtime from 'microtime';
 import { RBTree } from 'bintrees';
 
-const shuffle = arr => {
+const shuffle = (arr) => {
   const newArr = arr.slice();
   for (let i = newArr.length - 1; i > 0; i--) {
     const rand = Math.floor(Math.random() * (i + 1));
@@ -19,7 +19,7 @@ const makeData = (length) => {
   let A = new Array(length);
   for (let i = 0; i < length; i++) {
     A[i] = i;
-  };
+  }
 
   return shuffle(A);
 };
@@ -38,7 +38,7 @@ const intCmp = (x, y) => {
 const measure = (A, f) => {
   let now = Microtime.now();
 
-  for(let i = 0; i < A.length; i++) {
+  for (let i = 0; i < A.length; i++) {
     f(A[i]);
   }
 
@@ -46,38 +46,101 @@ const measure = (A, f) => {
 };
 
 const refresh = () => {
-
-  return [{ name: "SSet", structure: new SortedSet(intLeq, 1000) },
-  { name: "SArray", structure: new SortedArraySet(intLeq) },
-  { name: "Collections SSet", structure: new CollectionsSortedSet(undefined, undefined, intCmp) },
-  { name: "Fastest BTree", structure: new BTreeSet(undefined, intCmp) },
-  { name: "Functional Tree", structure: FunctionalRedBlackTree(intCmp) },
-  { name: "RBTree", structure: new RBTree(intCmp) }];
-
+  return [
+    { name: 'SSet', structure: new SortedSet(intLeq, 1000) },
+    //{ name: 'SArray', structure: new SortedArraySet(intLeq) },
+    {
+      name: 'Collections SSet',
+      structure: new CollectionsSortedSet(undefined, undefined, intCmp),
+    },
+    { name: 'Fastest BTree', structure: new BTreeSet(undefined, intCmp) },
+    { name: 'Functional Tree', structure: FunctionalRedBlackTree() },
+    { name: 'RBTree', structure: new RBTree(intCmp) },
+  ];
 };
 
-const structures = refresh();
+let structures = refresh();
 
-const adding1000 = structures.map((a) => {
+console.log('Inserting one million, random order.');
+
+const addingOneMillion = structures.map((a) => {
   let now = Microtime.now();
-  if (a.name.localeCompare('Functional Tree') !== 0 || a.name.localeCompare('RBTree') !== 0) {
-    console.log(a, 'here', a.name, a.name.localeCompare('Functional Tree'));
-    console.log(a, 'here', a.name, a.name.localeCompare('RBTree'));
-    for (let i = 0; i < testArrays[2].length; i++) {
-      a.structure.add(testArrays[2][i]);
-    };
+  if (a.name.localeCompare('Functional Tree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.insert(testArrays[3][i], testArrays[3][i]);
+    }
+  } else if (a.name.localeCompare('RBTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.insert(testArrays[3][i]);
+    }
+  } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.add(testArrays[3][i], undefined);
+    }
   } else {
-    console.log('here :/');
-    for (let i = 0; i < testArrays[2].length; i++) {
-      a.structure.insert(testArrays[2][i]);
-    };
-  };
-
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.add(testArrays[3][i]);
+    }
+  }
   return { name: a.name, duration: (Microtime.now() - now) / 1000 };
-})
+});
 
-for(let item of adding1000) {
+for (let item of addingOneMillion) {
   console.log(item);
 }
 
+console.log('Getting.');
 
+const gettingOneMillion = structures.map((a) => {
+  let now = Microtime.now();
+  if (a.name.localeCompare('Functional Tree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.get(testArrays[3][i]);
+    }
+  } else if (a.name.localeCompare('RBTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.find(testArrays[3][i]);
+    }
+  } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.get(testArrays[3][i], undefined);
+    }
+  } else {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.has(testArrays[3][i]);
+    }
+  }
+  return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+});
+
+for (let item of gettingOneMillion) {
+  console.log(item);
+}
+
+console.log('Removing.');
+
+const deletingOneMillion = structures.map((a) => {
+  let now = Microtime.now();
+  if (a.name.localeCompare('Functional Tree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.remove(testArrays[3][i]);
+    }
+  } else if (a.name.localeCompare('RBTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.remove(testArrays[3][i]);
+    }
+  } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.delete(testArrays[3][i], undefined);
+    }
+  } else {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.delete(testArrays[3][i]);
+    }
+  }
+  return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+});
+
+for (let item of deletingOneMillion) {
+  console.log(item);
+}

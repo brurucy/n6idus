@@ -1,0 +1,18 @@
+* Sorted Set
+
+Hey.
+
+This is a project of mine where I'm implementing a *very* effective sorted set data structure.
+
+It is faster, or the same speed, as all these libraries:
+
+1. https://github.com/qwertie/btree-typescript
+2. https://github.com/vadimg/js_bintrees#readme
+3. https://github.com/mikolalysenko/functional-red-black-tree#treegetkey
+4. https://github.com/montagejs/collections
+
+The main advantage over all of these, is that it supports indexing *by position* in O(log(log(n))) time complexity, while all others are O(n).
+
+As an example look how long it takes for each to find, in order, 1 million elements, versus position indexing:
+
+https://github.com/grantjenks/python-sortedcontainers has a *very* similar data structure, and it is the main source of inspiration.
