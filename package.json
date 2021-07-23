@@ -16,6 +16,11 @@
   },
   "dependencies": {
     "benchmark": "^2.1.4",
-    "microtime": "^3.0.0"
+    "bintrees": "^1.0.2",
+    "collections": "^5.1.12",
+    "functional-red-black-tree": "^1.0.1",
+    "microtime": "^3.0.0",
+    "mnemonist": "^0.38.3",
+    "sorted-btree": "^1.5.0"
   }
 }

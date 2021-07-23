@@ -7,7 +7,7 @@ class SortedArraySet {
   // gets the nth element
   select(nth) {
     if (nth < 0 || nth >= this.bucket.length) {
-      return undefined;
+      return null;
     } else {
       return this.bucket[nth];
     }
@@ -27,14 +27,14 @@ class SortedArraySet {
         high = mid;
       }
     }
-
+     
     return high;
   }
   indexOf(item) {
     let low = 0,
       high = this.bucket.length,
       mid = 0;
-
+    
     while (low < high) {
       mid = (low + high) >>> 1;
       let midVal = this.bucket[mid];
@@ -67,9 +67,10 @@ class SortedArraySet {
     if (
       this.bucket[position] !== undefined &&
       this.cmp(this.bucket[position], item) &&
-      this.cmp(item, this.bucket[position])
+        this.cmp(item, this.bucket[position])
+
     ) {
-      return undefined;
+      return null;
     } else {
       this.bucket.splice(position, 0, item);
       if (this.max === undefined || this.cmp(this.max, item)) {
@@ -92,14 +93,14 @@ class SortedArraySet {
       }
       return item;
     } else {
-      return undefined
+      return null;
     }
   }
   // removes by position
   remove(nth) {
     const item = this.select(nth);
-    if (item === undefined) {
-      return undefined;
+    if (item === null) {
+      return null;
     } else {
       this.bucket.splice(nth, 1);
       if (this.cmp(this.max, item) && this.cmp(item, this.max)) {

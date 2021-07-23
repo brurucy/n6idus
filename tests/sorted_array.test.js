@@ -81,7 +81,7 @@ test('Delete from sorted array set', () => {
   expect(sortedArraySet.has([1, 3, 5])).toEqual(false);
 
   expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.has([1, 9, 9])).toEqual(true)
+  expect(sortedArraySet.has([1, 9, 9])).toEqual(true);
   sortedArraySet.delete([1, 9, 9]);
   expect(sortedArraySet.has([1, 9, 9])).toEqual(false);
 
@@ -115,7 +115,7 @@ test('Remove nth from sorted array set', () => {
   sortedArraySet.remove(1);
   expect(sortedArraySet.select(0)).toEqual([1, 2, 3]);
   sortedArraySet.remove(0);
-  expect(sortedArraySet.select(0)).toEqual(undefined);
+  expect(sortedArraySet.select(0)).toEqual(null);
   expect(sortedArraySet.max).toEqual(undefined);
   expect(sortedArraySet.bucket).toEqual([]);
 });

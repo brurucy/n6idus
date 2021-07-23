@@ -1,4 +1,4 @@
-import { SortedArraySet } from './sorted_array.js'
+import { SortedArraySet } from './sorted_array.js';
 
 class SortedSet {
   bucketSize = 1000;
@@ -19,6 +19,7 @@ class SortedSet {
     for (const item of newBucketContents) {
       newArraySet.add(item);
     }
+    
     for (const item of oldBucketContents) {
       this.buckets[firstLevelIndex].add(item);
     }
@@ -71,7 +72,7 @@ class SortedSet {
   }
   #locate(nth) {
     if (nth >= this.length || nth < 0) {
-      return undefined;
+      return null;
     } else {
       let firstLevelIndex = this.#indexIndexOf(nth);
       let offset = 0;
@@ -87,13 +88,13 @@ class SortedSet {
       firstLevelIndex = firstLevelIndex - 1;
     }
     const add = this.buckets[firstLevelIndex].add(item);
-    if (add === undefined) {
-      return undefined
+    if (add === null) {
+      return null;
     } else {
       if (this.buckets[firstLevelIndex].bucket.length > this.bucketSize) {
         this.#balance(firstLevelIndex);
       } else {
-        if (this.index[firstLevelIndex] === undefined) {
+        if (this.index[firstLevelIndex] === null) {
           this.index[firstLevelIndex] = 0;
         }
         for (let i = firstLevelIndex; i < this.index.length; i++) {
@@ -106,8 +107,8 @@ class SortedSet {
   select(nth) {
     const indexes = this.#locate(nth);
     let [firstLevelIndex, secondLevelIndex] = [0, 0];
-    if (indexes === undefined) {
-      return undefined;
+    if (indexes === null) {
+      return null;
     } else {
       [firstLevelIndex, secondLevelIndex] = indexes;
       return this.buckets[firstLevelIndex].select(secondLevelIndex);
@@ -126,8 +127,8 @@ class SortedSet {
       firstLevelIndex = firstLevelIndex - 1;
     }
     const deletion = this.buckets[firstLevelIndex].delete(item);
-    if (deletion === undefined) {
-      return undefined
+    if (deletion === null) {
+      return null;
     } else {
       if (this.length !== 1 && this.buckets[firstLevelIndex].bucket.length === 0) {
         this.buckets.splice(firstLevelIndex, 1);
@@ -142,10 +143,11 @@ class SortedSet {
   remove(nth) {
     const indexes = this.#locate(nth);
     let [firstLevelIndex, secondLevelIndex] = [0, 0];
-    if (indexes === undefined) {
-      return undefined;
+    if (indexes === null) {
+      return null;
     } else {
       [firstLevelIndex, secondLevelIndex] = indexes;
+      
       return this.buckets[firstLevelIndex].select(secondLevelIndex);
     }
   }

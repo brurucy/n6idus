@@ -1,14 +1,5 @@
 import { SortedSet } from '../src/mod';
 
-const getShuffledArr = arr => {
-  const newArr = arr.slice()
-  for (let i = newArr.length - 1; i > 0; i--) {
-    const rand = Math.floor(Math.random() * (i + 1));
-    [newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
-  }
-  return newArr
-};
-
 const leq = (a, b) => {
   let isItLeq = true;
   if (!(a === undefined || b === undefined)) {
@@ -71,7 +62,7 @@ test('add to sorted set, index validation', () => {
 });
 
 test('add to sorted set, order and length assurance', () => {
-  const sortedSet = new SortedSet((x, y) => { return x <= y }, 10);
+  const sortedSet = new SortedSet((x, y) => { return x <= y; }, 10);
   let dataArr = new Array(1000);
   for (let i = 0; i < dataArr.length; i++) {
     dataArr[i] = i;
@@ -79,7 +70,7 @@ test('add to sorted set, order and length assurance', () => {
   dataArr = getShuffledArr(dataArr);
 
   for (const item of dataArr) {
-    sortedSet.add(item)
+    sortedSet.add(item);
   }
 
   expect(sortedSet.length).toEqual(1000);
@@ -94,7 +85,7 @@ test('add to sorted set, order and length assurance', () => {
       last = curr;
     }
   }
-})
+});
 
 test('getting the i-th element', () => {
   let sortedSet = new SortedSet(leq, 3);
@@ -113,7 +104,7 @@ test('getting the i-th element', () => {
   expect(sortedSet.select(4)).toEqual([1, 6, 7]);
   expect(sortedSet.select(5)).toEqual([1, 9, 9]);
 
-})
+});
 
 test('has', () => {
   let sortedSet = new SortedSet(leq, 3);
@@ -136,7 +127,7 @@ test('has', () => {
   expect(sortedSet.has([1, 15, 1])).toEqual(false);
   expect(sortedSet.has([1, 1, 1])).toEqual(false);
 
-})
+});
 
 test('Delete from sorted set', () => {
   let sortedSet = new SortedSet(leq, 3);
@@ -174,7 +165,7 @@ test('Delete from sorted set', () => {
   expect(sortedSet.has([1, 3, 5])).toEqual(false);
 
   expect(sortedSet.index).toEqual([1]);
-  expect(sortedSet.has([1, 9, 9])).toEqual(true)
+  expect(sortedSet.has([1, 9, 9])).toEqual(true);
   sortedSet.delete([1, 9, 9]);
   expect(sortedSet.has([1, 9, 9])).toEqual(false);
 

@@ -1,4 +1,4 @@
-import { join, antiJoin, joinMap } from './join.js';
 import { SortedSet } from './sorted_set.js';
+import { SortedArraySet } from './sorted_array.js';
 
-export { SortedSet, join, antiJoin, joinMap };
+export { SortedSet, SortedArraySet };

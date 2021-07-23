@@ -1,88 +1,83 @@
-import { SortedSet } from './src/mod.js';
-import { SortedArraySet } from './src/sorted_array.js';
+import { SortedSet, SortedArraySet } from './src/mod.js';
+import CollectionsSortedSet from 'collections/sorted-set.js';
+import FunctionalRedBlackTree from 'functional-red-black-tree';
+import BTree from 'sorted-btree';
+let BTreeSet = BTree.default;
 import Microtime from 'microtime';
+import { RBTree } from 'bintrees';
 
-const getShuffledArr = arr => {
-  const newArr = arr.slice()
+const shuffle = arr => {
+  const newArr = arr.slice();
   for (let i = newArr.length - 1; i > 0; i--) {
     const rand = Math.floor(Math.random() * (i + 1));
     [newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
   }
-  return newArr
+  return newArr;
 };
 
-let thousand = new Array(1000);
-for (let i = 0; i < thousand.length; i++) {
-  thousand[i] = i;
-}
-thousand = getShuffledArr(thousand);
+const makeData = (length) => {
+  let A = new Array(length);
+  for (let i = 0; i < length; i++) {
+    A[i] = i;
+  };
 
-let tenThousand = new Array(10000);
-for (let i = 0; i < tenThousand.length; i++) {
-  tenThousand[i] = i;
-}
-tenThousand = getShuffledArr(tenThousand);
+  return shuffle(A);
+};
 
-let hundredThousand = new Array(100_000);
-for (let i = 0; i < hundredThousand.length; i++) {
-  hundredThousand[i] = i;
-}
-hundredThousand = getShuffledArr(hundredThousand);
+const sizes = [1_000, 10_000, 100_000, 1_000_000];
 
-let oneMillion = new Array(1_000_000);
-for (let i = 0; i < oneMillion.length; i++) {
-  oneMillion[i] = i;
-}
-oneMillion = getShuffledArr(oneMillion);
-
-// Base js sorted array
+const testArrays = sizes.map(makeData);
 
 const intLeq = (x, y) => {
   return x <= y;
 };
+const intCmp = (x, y) => {
+  return x - y;
+};
 
-let sortedSet = new SortedSet(intLeq, 1000);
-let arr = new SortedArraySet(intLeq);
+const measure = (A, f) => {
+  let now = Microtime.now();
 
-let now = Microtime.now();
-for (let i = 0; i < thousand.length; i++) {
-  arr.add(thousand[i]);
+  for(let i = 0; i < A.length; i++) {
+    f(A[i]);
+  }
+
+  return (Microtime.now() - now) / 1000;
+};
+
+const refresh = () => {
+
+  return [{ name: "SSet", structure: new SortedSet(intLeq, 1000) },
+  { name: "SArray", structure: new SortedArraySet(intLeq) },
+  { name: "Collections SSet", structure: new CollectionsSortedSet(undefined, undefined, intCmp) },
+  { name: "Fastest BTree", structure: new BTreeSet(undefined, intCmp) },
+  { name: "Functional Tree", structure: FunctionalRedBlackTree(intCmp) },
+  { name: "RBTree", structure: new RBTree(intCmp) }];
+
+};
+
+const structures = refresh();
+
+const adding1000 = structures.map((a) => {
+  let now = Microtime.now();
+  if (a.name.localeCompare('Functional Tree') !== 0 || a.name.localeCompare('RBTree') !== 0) {
+    console.log(a, 'here', a.name, a.name.localeCompare('Functional Tree'));
+    console.log(a, 'here', a.name, a.name.localeCompare('RBTree'));
+    for (let i = 0; i < testArrays[2].length; i++) {
+      a.structure.add(testArrays[2][i]);
+    };
+  } else {
+    console.log('here :/');
+    for (let i = 0; i < testArrays[2].length; i++) {
+      a.structure.insert(testArrays[2][i]);
+    };
+  };
+
+  return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+})
+
+for(let item of adding1000) {
+  console.log(item);
 }
-console.log('SortedArraySet#1000', (Microtime.now() - now) / 1000);
 
-now = Microtime.now();
-for (let i = 0; i < thousand.length; i++) {
-  sortedSet.add(thousand[i]);
-}
-console.log('SortedSet#1000', (Microtime.now() - now) / 1000);
 
-sortedSet = new SortedSet(intLeq, 1000);
-arr = new SortedArraySet(intLeq);
-
-//
-now = Microtime.now();
-for (let i = 0; i < tenThousand.length; i++) {
-  arr.add(tenThousand[i]);
-}
-console.log('SortedArraySet#10000', (Microtime.now() - now) / 1000);
-
-now = Microtime.now();
-for (let i = 0; i < tenThousand.length; i++) {
-  sortedSet.add(tenThousand[i]);
-}
-console.log('SortedSet#10000', (Microtime.now() - now) / 1000);
-
-sortedSet = new SortedSet(intLeq, 1000);
-arr = new SortedArraySet(intLeq);
-
-now = Microtime.now();
-for (let i = 0; i < hundredThousand.length; i++) {
-  arr.add(hundredThousand[i]);
-}
-console.log('SortedArraySet#100000', (Microtime.now() - now) / 1000);
-
-now = Microtime.now();
-for (let i = 0; i < hundredThousand.length; i++) {
-  sortedSet.add(hundredThousand[i]);
-}
-console.log('SortedSet#100000', (Microtime.now() - now) / 1000);
