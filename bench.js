@@ -48,7 +48,6 @@ const measure = (A, f) => {
 const refresh = () => {
   return [
     { name: 'SSet', structure: new SortedSet(intLeq, 1000) },
-    //{ name: 'SArray', structure: new SortedArraySet(intLeq) },
     {
       name: 'Collections SSet',
       structure: new CollectionsSortedSet(undefined, undefined, intCmp),
@@ -67,7 +66,7 @@ const addingOneMillion = structures.map((a) => {
   let now = Microtime.now();
   if (a.name.localeCompare('Functional Tree') === 0) {
     for (let i = 0; i < testArrays[3].length; i++) {
-      a.structure.insert(testArrays[3][i], testArrays[3][i]);
+      a.structure = a.structure.insert(testArrays[3][i], testArrays[3][i]);
     }
   } else if (a.name.localeCompare('RBTree') === 0) {
     for (let i = 0; i < testArrays[3].length; i++) {
@@ -117,13 +116,29 @@ for (let item of gettingOneMillion) {
   console.log(item);
 }
 
+console.log('Getting by index');
+
+const gettingOneMillionByIndex = structures
+  .filter((a) => a.name.localeCompare('SSet') === 0)
+  .map((a) => {
+    let now = Microtime.now();
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.select(i);
+    }
+    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+  });
+
+for (let item of gettingOneMillionByIndex) {
+  console.log(item);
+}
+
 console.log('Removing.');
 
 const deletingOneMillion = structures.map((a) => {
   let now = Microtime.now();
   if (a.name.localeCompare('Functional Tree') === 0) {
     for (let i = 0; i < testArrays[3].length; i++) {
-      a.structure.remove(testArrays[3][i]);
+      a.structure = a.structure.remove(testArrays[3][i]);
     }
   } else if (a.name.localeCompare('RBTree') === 0) {
     for (let i = 0; i < testArrays[3].length; i++) {
@@ -142,5 +157,105 @@ const deletingOneMillion = structures.map((a) => {
 });
 
 for (let item of deletingOneMillion) {
+  console.log(item);
+}
+
+console.log('Inserting one million, sequential order.');
+
+const addingOneMillionSequential = structures.map((a) => {
+  let now = Microtime.now();
+  if (a.name.localeCompare('Functional Tree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure = a.structure.insert(i, i);
+    }
+  } else if (a.name.localeCompare('RBTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.insert(i);
+    }
+  } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.add(i, undefined);
+    }
+  } else {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.add(i);
+    }
+  }
+  return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+});
+
+for (let item of addingOneMillionSequential) {
+  console.log(item);
+}
+
+console.log('Getting.');
+
+const gettingOneMillionSequential = structures.map((a) => {
+  let now = Microtime.now();
+  if (a.name.localeCompare('Functional Tree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.get(i);
+    }
+  } else if (a.name.localeCompare('RBTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.find(i);
+    }
+  } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.get(i, undefined);
+    }
+  } else {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.has(i);
+    }
+  }
+  return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+});
+
+for (let item of gettingOneMillionSequential) {
+  console.log(item);
+}
+
+console.log('Getting by index');
+
+const gettingOneMillionByIndexSequential = structures
+  .filter((a) => a.name.localeCompare('SSet') === 0)
+  .map((a) => {
+    let now = Microtime.now();
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.select(i);
+    }
+    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+  });
+
+for (let item of gettingOneMillionByIndexSequential) {
+  console.log(item);
+}
+
+console.log('Removing.');
+
+const deletingOneMillionSequential = structures.map((a) => {
+  let now = Microtime.now();
+  if (a.name.localeCompare('Functional Tree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure = a.structure.remove(i);
+    }
+  } else if (a.name.localeCompare('RBTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.remove(i);
+    }
+  } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.delete(i, undefined);
+    }
+  } else {
+    for (let i = 0; i < testArrays[3].length; i++) {
+      a.structure.delete(i);
+    }
+  }
+  return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+});
+
+for (let item of deletingOneMillionSequential) {
   console.log(item);
 }

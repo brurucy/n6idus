@@ -4,7 +4,7 @@ const leq = (a, b) => {
   let isItLeq = true;
   if (!(a === undefined || b === undefined)) {
     for (let i = 0; i < a.length; i++) {
-      if ((a[i] <= b[i]) && (b[i] <= a[i])) {
+      if (a[i] <= b[i] && b[i] <= a[i]) {
         continue;
       } else {
         isItLeq = a[i] <= b[i];
@@ -13,6 +13,15 @@ const leq = (a, b) => {
     }
   }
   return isItLeq;
+};
+
+const shuffle = (arr) => {
+  const newArr = arr.slice();
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const rand = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
+  }
+  return newArr;
 };
 
 test('add to sorted set, simple', () => {
@@ -43,7 +52,6 @@ test('add to sorted set, with balance', () => {
   expect(sortedSet.buckets[2].bucket[1]).toEqual([1, 9, 9]);
 });
 
-
 test('add to sorted set, index validation', () => {
   let sortedSet = new SortedSet(leq, 3);
 
@@ -62,12 +70,14 @@ test('add to sorted set, index validation', () => {
 });
 
 test('add to sorted set, order and length assurance', () => {
-  const sortedSet = new SortedSet((x, y) => { return x <= y; }, 10);
+  const sortedSet = new SortedSet((x, y) => {
+    return x <= y;
+  }, 10);
   let dataArr = new Array(1000);
   for (let i = 0; i < dataArr.length; i++) {
     dataArr[i] = i;
   }
-  dataArr = getShuffledArr(dataArr);
+  dataArr = shuffle(dataArr);
 
   for (const item of dataArr) {
     sortedSet.add(item);
@@ -103,7 +113,6 @@ test('getting the i-th element', () => {
   expect(sortedSet.select(3)).toEqual([1, 3, 5]);
   expect(sortedSet.select(4)).toEqual([1, 6, 7]);
   expect(sortedSet.select(5)).toEqual([1, 9, 9]);
-
 });
 
 test('has', () => {
@@ -126,7 +135,6 @@ test('has', () => {
   expect(sortedSet.has([1, 2, 9])).toEqual(false);
   expect(sortedSet.has([1, 15, 1])).toEqual(false);
   expect(sortedSet.has([1, 1, 1])).toEqual(false);
-
 });
 
 test('Delete from sorted set', () => {
@@ -171,10 +179,7 @@ test('Delete from sorted set', () => {
 
   expect(sortedSet.index).toEqual([]);
   expect(sortedSet.buckets[0].bucket).toEqual([]);
-
 });
-
-/*
 
 test('Remove from sorted set, index validation', () => {
   let sortedSet = new SortedSet(leq, 3);
@@ -226,12 +231,12 @@ test('Get nth from sorted set', () => {
   sortedSet.add([1, 2, 4]);
   sortedSet.add([1, 9, 9]);
 
-  expect(sortedSet.get(0)).toEqual([1, 2, 2]);
-  expect(sortedSet.get(1)).toEqual([1, 2, 3]);
-  expect(sortedSet.get(2)).toEqual([1, 2, 4]);
-  expect(sortedSet.get(3)).toEqual([1, 3, 5]);
-  expect(sortedSet.get(4)).toEqual([1, 6, 7]);
-  expect(sortedSet.get(5)).toEqual([1, 9, 9]);
+  expect(sortedSet.select(0)).toEqual([1, 2, 2]);
+  expect(sortedSet.select(1)).toEqual([1, 2, 3]);
+  expect(sortedSet.select(2)).toEqual([1, 2, 4]);
+  expect(sortedSet.select(3)).toEqual([1, 3, 5]);
+  expect(sortedSet.select(4)).toEqual([1, 6, 7]);
+  expect(sortedSet.select(5)).toEqual([1, 9, 9]);
 });
 
 test('Delete nth from sorted set', () => {
@@ -245,18 +250,17 @@ test('Delete nth from sorted set', () => {
   sortedSet.add([1, 9, 9]);
 
   sortedSet.remove(0);
-  expect(sortedSet.get(0)).toEqual([1, 2, 3]);
+  expect(sortedSet.select(0)).toEqual([1, 2, 3]);
   sortedSet.remove(4);
-  expect(sortedSet.get(3)).toEqual([1, 6, 7]);
+  expect(sortedSet.select(3)).toEqual([1, 6, 7]);
   sortedSet.remove(3);
-  expect(sortedSet.get(2)).toEqual([1, 3, 5]);
+  expect(sortedSet.select(2)).toEqual([1, 3, 5]);
   sortedSet.remove(2);
-  expect(sortedSet.get(1)).toEqual([1, 2, 4]);
+  expect(sortedSet.select(1)).toEqual([1, 2, 4]);
   sortedSet.remove(1);
-  expect(sortedSet.get(0)).toEqual([1, 2, 3]);
+  expect(sortedSet.select(0)).toEqual([1, 2, 3]);
   sortedSet.remove(0);
-  expect(sortedSet.get(0)).toEqual(undefined);
-  expect(sortedSet.buckets).toEqual([[]]);
+  expect(sortedSet.select(0)).toEqual(null);
+  expect(sortedSet.buckets[0].bucket).toEqual([]);
   expect(sortedSet.index).toEqual([]);
 });
-*/

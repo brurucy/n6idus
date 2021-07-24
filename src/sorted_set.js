@@ -13,13 +13,15 @@ class SortedSet {
   #balance(firstLevelIndex) {
     const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
     const newBucketContents = this.buckets[firstLevelIndex].bucket.slice(-half);
-    const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(0, half);
+    const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(
+      0,
+      half
+    );
     const newArraySet = new SortedArraySet(this.cmp);
     this.buckets[firstLevelIndex] = new SortedArraySet(this.cmp);
     for (const item of newBucketContents) {
       newArraySet.add(item);
     }
-    
     for (const item of oldBucketContents) {
       this.buckets[firstLevelIndex].add(item);
     }
@@ -33,16 +35,16 @@ class SortedSet {
   }
   #bucketIndexOf(item) {
     let low = 0,
-        high = this.buckets.length,
-        mid = 0;
+      high = this.buckets.length,
+      mid = 0;
 
     while (low < high) {
       mid = (low + high) >>> 1;
       let midVal = this.buckets[mid].max;
       if (
-          midVal !== undefined &&
-          this.cmp(midVal, item) &&
-          !this.cmp(item, midVal)
+        midVal !== undefined &&
+        this.cmp(midVal, item) &&
+        !this.cmp(item, midVal)
       ) {
         low = mid + 1;
       } else {
@@ -53,16 +55,13 @@ class SortedSet {
   }
   #indexIndexOf(nth) {
     let low = 0,
-        high = this.buckets.length,
-        mid = 0;
+      high = this.buckets.length,
+      mid = 0;
 
     while (low < high) {
       mid = (low + high) >>> 1;
       let midVal = this.index[mid];
-      if (
-          midVal !== undefined &&
-          midVal <= nth
-      ) {
+      if (midVal !== undefined && midVal <= nth) {
         low = mid + 1;
       } else {
         high = mid;
@@ -94,7 +93,7 @@ class SortedSet {
       if (this.buckets[firstLevelIndex].bucket.length > this.bucketSize) {
         this.#balance(firstLevelIndex);
       } else {
-        if (this.index[firstLevelIndex] === null) {
+        if (this.index[firstLevelIndex] === undefined) {
           this.index[firstLevelIndex] = 0;
         }
         for (let i = firstLevelIndex; i < this.index.length; i++) {
@@ -127,17 +126,21 @@ class SortedSet {
       firstLevelIndex = firstLevelIndex - 1;
     }
     const deletion = this.buckets[firstLevelIndex].delete(item);
+
     if (deletion === null) {
       return null;
     } else {
-      if (this.length !== 1 && this.buckets[firstLevelIndex].bucket.length === 0) {
-        this.buckets.splice(firstLevelIndex, 1);
-      }
       for (let i = firstLevelIndex; i < this.index.length; i++) {
         this.index[i] = this.index[i] - 1;
       }
-      this.index = this.index.filter((x) => x > 0);
+      if (this.buckets[firstLevelIndex].bucket.length === 0) {
+        if (this.length !== 1) {
+          this.buckets.splice(firstLevelIndex, 1);
+        }
+        this.index.splice(firstLevelIndex, 1);
+      }
       this.length = this.length - 1;
+      return deletion;
     }
   }
   remove(nth) {
@@ -147,8 +150,22 @@ class SortedSet {
       return null;
     } else {
       [firstLevelIndex, secondLevelIndex] = indexes;
-      
-      return this.buckets[firstLevelIndex].select(secondLevelIndex);
+      const removal = this.buckets[firstLevelIndex].remove(secondLevelIndex);
+      if (removal === null) {
+        return null;
+      } else {
+        for (let i = firstLevelIndex; i < this.index.length; i++) {
+          this.index[i] = this.index[i] - 1;
+        }
+        if (this.buckets[firstLevelIndex].bucket.length === 0) {
+          if (this.length !== 1) {
+            this.buckets.splice(firstLevelIndex, 1);
+          }
+          this.index.splice(firstLevelIndex, 1);
+        }
+        this.length = this.length - 1;
+        return removal;
+      }
     }
   }
 }
