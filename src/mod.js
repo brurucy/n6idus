@@ -1,4 +1,4 @@
-import { SortedSet } from './sorted_set.js';
-import { SortedArraySet } from './sorted_array.js';
+import { IndexedSortedSet } from './indexed_sorted_set.js';
+import { SortedSet } from './sorted_set.js'
 
-export { SortedSet, SortedArraySet };
+export { IndexedSortedSet, SortedSet };
