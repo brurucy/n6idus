@@ -1,25 +1,24 @@
 {
-	"name": "sortedset-js",
-	"version": "0.1.0",
-	"type": "module",
-	"description": "A very efficient sorted set implementation",
-	"main": "bench.js",
-	"scripts": {
-		"test": "NODE_OPTIONS=--experimental-vm-modules jest"
-	},
-	"sourcetype": "module",
-	"author": "Rucy",
-	"license": "ISC",
-	"devDependencies": {
-		"bintrees": "^1.0.2",
-		"collections": "^5.1.12",
-		"eslint": "^7.32.0",
-		"eslint-config-google": "^0.14.0",
-		"eslint-config-pipedrive": "^9.0.1",
-		"eslint-config-prettier": "^8.3.0",
-		"functional-red-black-tree": "^1.0.1",
-		"jest": "^27.0.6",
-		"microtime": "^3.0.0",
-		"sorted-btree": "^1.5.0"
-	}
+  "name": "sortedset-js",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A very efficient sorted set implementation",
+  "main": "bench.js",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
+  "author": "Rucy",
+  "license": "ISC",
+  "devDependencies": {
+    "bintrees": "^1.0.2",
+    "collections": "^5.1.12",
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-pipedrive": "^9.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "functional-red-black-tree": "^1.0.1",
+    "jest": "^27.0.6",
+    "microtime": "^3.0.0",
+    "sorted-btree": "^1.5.0"
+  }
 }

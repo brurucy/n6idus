@@ -1,3 +1,6 @@
 {
-  "extends": ["pipedrive/es9"]
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "extends": ["pipedrive/es9", "prettier"]
 }

@@ -5,9 +5,7 @@ node_modules
 /.vscode/
 /coverage/
 /package-lock.json
-/launch.json~
-/package.json~
 /src/.DS_Store
-/src/sorted_set.js~
-/tests/join.test.js~
-/tests/sorted_set.test.js~
+*~
+*#
+\#*
