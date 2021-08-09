@@ -1,5 +1,5 @@
-import { SortedArraySet } from "./sorted_array.js";
-import { FenwickArray } from "./index.js";
+import { SortedArraySet } from './sorted_array.js';
+import { FenwickArray } from './index.js';
 
 class IndexedSortedSet {
   bucketSize = 1000;
@@ -14,10 +14,7 @@ class IndexedSortedSet {
   #balance(firstLevelIndex) {
     const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
     const newBucketContents = this.buckets[firstLevelIndex].bucket.slice(-half);
-    const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(
-      0,
-      half
-    );
+    const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(0, half);
     const newArraySet = new SortedArraySet(this.cmp);
     this.buckets[firstLevelIndex] = new SortedArraySet(this.cmp);
     for (const item of newBucketContents) {
@@ -41,11 +38,7 @@ class IndexedSortedSet {
     while (low < high) {
       mid = (low + high) >>> 1;
       let midVal = this.buckets[mid].max;
-      if (
-        midVal !== undefined &&
-        this.cmp(midVal, item) &&
-        !this.cmp(item, midVal)
-      ) {
+      if (midVal !== undefined && this.cmp(midVal, item) && !this.cmp(item, midVal)) {
         low = mid + 1;
       } else {
         high = mid;
@@ -191,17 +184,13 @@ class IndexedSortedSet {
 
     while (leftIterator + rightIterator < rightLength + leftLength) {
       if (
-        rightInnerIterator >
-          this.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
         rightIterator < rightLength
       ) {
         rightInnerIterator = 0;
         rightOuterIterator = rightOuterIterator + 1;
       }
-      if (
-        leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 &&
-        leftIterator < leftLength
-      ) {
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
         leftInnerIterator = 0;
         leftOuterIterator = leftOuterIterator + 1;
       }
@@ -210,12 +199,8 @@ class IndexedSortedSet {
         productOuterIterator = productOuterIterator + 1;
         productInnerIterator = -1;
       }
-      const currentLeftValue =
-          this.buckets[leftOuterIterator].select(leftInnerIterator),
-        currentRightValue =
-          otherIndexedSortedSet.buckets[rightOuterIterator].select(
-            rightInnerIterator
-          );
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
       if (leftIterator >= leftLength) {
         rightInnerIterator = rightInnerIterator + 1;
         rightIterator = rightIterator + 1;
@@ -226,10 +211,7 @@ class IndexedSortedSet {
         leftIterator = leftIterator + 1;
         productInnerIterator = productInnerIterator + 1;
         product[productOuterIterator].push(currentLeftValue);
-      } else if (
-        this.cmp(currentLeftValue, currentRightValue) &&
-        this.cmp(currentRightValue, currentLeftValue)
-      ) {
+      } else if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
         leftInnerIterator = leftInnerIterator + 1;
         rightInnerIterator = rightInnerIterator + 1;
         leftIterator = leftIterator + 1;
@@ -251,5 +233,61 @@ class IndexedSortedSet {
     productIndexedSortedSet.fromPreBucketedArray(product);
     return productIndexedSortedSet;
   }
+  intersection(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    const product = [[]],
+      productIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+
+    while (leftIterator < leftLength && rightIterator < rightLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      if (product[productOuterIterator].length === this.bucketSize) {
+        product.push([]);
+        productOuterIterator = productOuterIterator + 1;
+        productInnerIterator = -1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentLeftValue);
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+      }
+    }
+    productIndexedSortedSet.fromPreBucketedArray(product);
+    return productIndexedSortedSet;
+  }
+  difference() {}
 }
 export { IndexedSortedSet };
