@@ -11,8 +11,14 @@ It is faster, or the same speed, as all these libraries:
 3. https://github.com/mikolalysenko/functional-red-black-tree#treegetkey
 4. https://github.com/montagejs/collections
 
-The main advantage over all of these, is that it supports indexing *by position* in O(log(log(n))) time complexity, while all others are O(n).
+The main advantage over all of these, is that it supports indexing *by position* in amortized O(log(B)) time complexity, where B is constant, while all others are O(n).
 
-As an example look how long it takes for each to find, in order, 1 million elements, versus position indexing:
+To implement:
 
-https://github.com/grantjenks/python-sortedcontainers has a *very* similar data structure, and it is the main source of inspiration.
+[] - remove all index building unnecessary linear passes
+[] - boolean set operations
+[] - forward iteration
+[] - reverse iteration
+[] - range iteration
+[] - range delete
+[] - polish the API so it's publishable

@@ -288,6 +288,165 @@ class IndexedSortedSet {
     productIndexedSortedSet.fromPreBucketedArray(product);
     return productIndexedSortedSet;
   }
-  difference() {}
+  difference(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    const product = [[]],
+      productIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+
+    while (leftIterator + rightIterator < rightLength + leftLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      if (product[productOuterIterator].length === this.bucketSize) {
+        product.push([]);
+        productOuterIterator = productOuterIterator + 1;
+        productInnerIterator = -1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (leftIterator >= leftLength) {
+        break;
+      } else if (rightIterator >= rightLength) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentLeftValue);
+      } else if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentLeftValue);
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentRightValue);
+      }
+    }
+    productIndexedSortedSet.fromPreBucketedArray(product);
+    return productIndexedSortedSet;
+  }
+  symmetricDifference(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    const product = [[]],
+      productIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+
+    while (leftIterator + rightIterator < rightLength + leftLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      if (product[productOuterIterator].length === this.bucketSize) {
+        product.push([]);
+        productOuterIterator = productOuterIterator + 1;
+        productInnerIterator = -1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (leftIterator >= leftLength) {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentRightValue);
+      } else if (rightIterator >= rightLength) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentLeftValue);
+      } else if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentLeftValue);
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+        productInnerIterator = productInnerIterator + 1;
+        product[productOuterIterator].push(currentRightValue);
+      }
+    }
+    productIndexedSortedSet.fromPreBucketedArray(product);
+    return productIndexedSortedSet;
+  }
+  sameAs(otherIndexedSortedSet) {
+    let eq = true;
+    if (this.length !== otherIndexedSortedSet.length) {
+      eq = false;
+      return eq;
+    }
+    for (let i = 0; i < this.buckets.length; i++) {
+      const currentLeftBucket = this.buckets[i];
+      const currentRightBucket = otherIndexedSortedSet.buckets[i];
+      for (let j = 0; j < currentLeftBucket.bucket.length; j++) {
+        if (
+          !(
+            this.cmp(currentLeftBucket.bucket[j], currentRightBucket.bucket[j]) &&
+            this.cmp(currentRightBucket.bucket[j], currentLeftBucket.bucket[j])
+          )
+        ) {
+          eq = false;
+          return eq;
+        }
+      }
+    }
+    return eq;
+  }
+  isDisjointWith() {}
+  isEmpty() {}
+  isSubsetOf() {}
+  isProperSubsetOf() {}
+  isSupersetOf() {}
+  isProperSupersetOf() {}
 }
 export { IndexedSortedSet };
