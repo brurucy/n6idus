@@ -15,10 +15,20 @@ The main advantage over all of these, is that it supports indexing *by position*
 
 To implement:
 
-[] - remove all index building unnecessary linear passes
-[] - boolean set operations
-[] - forward iteration
-[] - reverse iteration
-[] - range iteration
-[] - range delete
-[] - polish the API so it's publishable
+- forward iteration by position
+- forward iteration by value
+- reverse iteration by position
+- reverse iteration by value
+- range forward iteration by position
+- range forward iteration by value
+- range backwards iteration by position
+- range backwards iteration by value
+- bulk delete by position
+- bulk delete by value
+- getMin
+- getMax
+- popMin
+- popMax
+- nextHigherKey
+- nextLowerKey
+- toArray
