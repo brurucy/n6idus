@@ -17,8 +17,12 @@ const leastSignificantBit = (value) => {
 
 class FenwickArray {
   //innerStructure = [];
-  constructor(arr) {
-    this.#init(arr);
+  constructor(arr, isArrayOfArrays) {
+    if (isArrayOfArrays !== undefined) {
+      this.#initFromArrayOfArrays(arr);
+    } else {
+      this.#init(arr);
+    }
   }
   #init(arr) {
     const length = arr.length;
@@ -34,21 +38,32 @@ class FenwickArray {
       }
     }
   }
+  #initFromArrayOfArrays(arr) {
+    const length = arr.length;
+    this.innerStructure = new Array(length);
+    this.innerStructure[0] = arr[0].bucket.length;
+    for (let i = 1; i < arr.length; i++) {
+      this.innerStructure[i] = this.innerStructure[i - 1] + arr[i].bucket.length;
+    }
+    for (let i = length - 1; i > 0; i--) {
+      const lowerBound = (i & (i + 1)) - 1;
+      if (lowerBound >= 0) {
+        this.innerStructure[i] -= this.innerStructure[lowerBound];
+      }
+    }
+  }
   prefixSum(index) {
     let sum = 0;
-    while (index > 0)
-      (sum += this.innerStructure[index - 1]), (index &= index - 1);
+    while (index > 0) (sum += this.innerStructure[index - 1]), (index &= index - 1);
     return sum;
   }
   increaseLength(index) {
     const length = this.innerStructure.length;
-    while (index < length)
-      (this.innerStructure[index] += 1), (index |= index + 1);
+    while (index < length) (this.innerStructure[index] += 1), (index |= index + 1);
   }
   decreaseLength(index) {
     const length = this.innerStructure.length;
-    while (index < length)
-      (this.innerStructure[index] -= 1), (index |= index + 1);
+    while (index < length) (this.innerStructure[index] -= 1), (index |= index + 1);
   }
   indexOf(ith) {
     const length = this.innerStructure.length;

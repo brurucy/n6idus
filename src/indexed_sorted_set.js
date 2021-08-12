@@ -17,18 +17,13 @@ class IndexedSortedSet {
     const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(0, half);
     const newArraySet = new SortedArraySet(this.cmp);
     this.buckets[firstLevelIndex] = new SortedArraySet(this.cmp);
-    for (const item of newBucketContents) {
-      newArraySet.add(item);
-    }
-    for (const item of oldBucketContents) {
-      this.buckets[firstLevelIndex].add(item);
-    }
+    newArraySet.bucket = newBucketContents;
+    this.buckets[firstLevelIndex].bucket = oldBucketContents;
+    newArraySet.max = newArraySet.bucket[newArraySet.bucket.length - 1];
+    this.buckets[firstLevelIndex].max =
+      this.buckets[firstLevelIndex].bucket[this.buckets[firstLevelIndex].bucket.length - 1];
     this.buckets.splice(firstLevelIndex + 1, 0, newArraySet);
-    const index = new Array(this.buckets.length);
-    for (let i = 0; i < this.buckets.length; i++) {
-      index[i] = this.buckets[i].bucket.length;
-    }
-    this.index = new FenwickArray(index);
+    this.index = new FenwickArray(this.buckets, true);
   }
   #bucketIndexOf(item) {
     let low = 0,
@@ -59,24 +54,25 @@ class IndexedSortedSet {
     }
   }
   #buildIndex() {
-    const index = new Array(this.buckets.length);
-    let length = 0;
-    for (let i = 0; i < this.buckets.length; i++) {
-      index[i] = this.buckets[i].bucket.length;
-      length += index[i];
-    }
-    this.index = new FenwickArray(index);
-    this.length = length;
+    //const index = new Array(this.buckets.length);
+    // for (let i = 0; i < this.buckets.length; i++) {
+    //   index[i] = this.buckets[i].bucket.length;
+    //   length += index[i];
+    // }
+    this.index = new FenwickArray(this.buckets, true);
   }
   fromPreBucketedArray(preBucketedAndSortedArray) {
     const arraySets = new Array(preBucketedAndSortedArray.length);
+    let length = 0;
     for (let i = 0; i < arraySets.length; i++) {
       let arraySet = new SortedArraySet(this.cmp);
       arraySet.bucket = preBucketedAndSortedArray[i];
       arraySet.max = arraySet.bucket[arraySet.bucket.length - 1];
       arraySets[i] = arraySet;
+      length = length + preBucketedAndSortedArray[i].length;
     }
     this.buckets = arraySets;
+    this.length = length;
     this.#buildIndex();
   }
   add(item) {
@@ -127,11 +123,11 @@ class IndexedSortedSet {
         if (this.length !== 1) {
           this.buckets.splice(firstLevelIndex, 1);
         }
-        const index = new Array(this.buckets.length);
-        for (let i = 0; i < this.buckets.length; i++) {
-          index[i] = this.buckets[i].bucket.length;
-        }
-        this.index = new FenwickArray(index);
+        // const index = new Array(this.buckets.length);
+        // for (let i = 0; i < this.buckets.length; i++) {
+        //   index[i] = this.buckets[i].bucket.length;
+        // }
+        this.index = new FenwickArray(this.buckets, true);
       }
       this.length = this.length - 1;
       return deletion;
@@ -153,11 +149,11 @@ class IndexedSortedSet {
           if (this.length !== 1) {
             this.buckets.splice(firstLevelIndex, 1);
           }
-          const index = new Array(this.buckets.length);
-          for (let i = 0; i < this.buckets.length; i++) {
-            index[i] = this.buckets[i].bucket.length;
-          }
-          this.index = new FenwickArray(index);
+          // const index = new Array(this.buckets.length);
+          // for (let i = 0; i < this.buckets.length; i++) {
+          //   index[i] = this.buckets[i].bucket.length;
+          // }
+          this.index = new FenwickArray(this.buckets, true);
         }
         this.length = this.length - 1;
         return removal;
@@ -442,11 +438,264 @@ class IndexedSortedSet {
     }
     return eq;
   }
-  isDisjointWith() {}
-  isEmpty() {}
-  isSubsetOf() {}
-  isProperSubsetOf() {}
-  isSupersetOf() {}
-  isProperSupersetOf() {}
+  isDisjointWith(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    let isDisjoint = true;
+
+    while (leftIterator < leftLength && rightIterator < rightLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+        isDisjoint = false;
+        return isDisjoint;
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+      }
+    }
+    return isDisjoint;
+  }
+  isEmpty() {
+    return this.length === 0 ? true : false;
+  }
+  isSubsetOf(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    let matches = 0;
+
+    while (leftIterator < leftLength && rightIterator < rightLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+        matches = matches + 1;
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+      }
+    }
+
+    if (matches === this.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  isProperSubsetOf(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    let matches = 0;
+
+    while (leftIterator < leftLength && rightIterator < rightLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+        matches = matches + 1;
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+      }
+    }
+
+    if (matches === this.length && this.length != otherIndexedSortedSet.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  isSupersetOf(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    let matches = 0;
+
+    while (leftIterator < leftLength && rightIterator < rightLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+        matches = matches + 1;
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+      }
+    }
+
+    if (matches === otherIndexedSortedSet.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  isProperSupersetOf(otherIndexedSortedSet) {
+    let leftOuterIterator = 0,
+      rightOuterIterator = 0,
+      productOuterIterator = 0;
+
+    let leftInnerIterator = 0,
+      rightInnerIterator = 0,
+      productInnerIterator = 0;
+
+    let leftIterator = 0,
+      rightIterator = 0;
+
+    const leftLength = this.length,
+      rightLength = otherIndexedSortedSet.length;
+
+    let matches = 0;
+
+    while (leftIterator < leftLength && rightIterator < rightLength) {
+      if (
+        rightInnerIterator > otherIndexedSortedSet.buckets[rightOuterIterator].bucket.length - 1 &&
+        rightIterator < rightLength
+      ) {
+        rightInnerIterator = 0;
+        rightOuterIterator = rightOuterIterator + 1;
+      }
+      if (leftInnerIterator > this.buckets[leftOuterIterator].bucket.length - 1 && leftIterator < leftLength) {
+        leftInnerIterator = 0;
+        leftOuterIterator = leftOuterIterator + 1;
+      }
+      const currentLeftValue = this.buckets[leftOuterIterator].select(leftInnerIterator),
+        currentRightValue = otherIndexedSortedSet.buckets[rightOuterIterator].select(rightInnerIterator);
+      if (this.cmp(currentLeftValue, currentRightValue) && this.cmp(currentRightValue, currentLeftValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        rightInnerIterator = rightInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+        rightIterator = rightIterator + 1;
+        matches = matches + 1;
+      } else if (this.cmp(currentLeftValue, currentRightValue)) {
+        leftInnerIterator = leftInnerIterator + 1;
+        leftIterator = leftIterator + 1;
+      } else {
+        rightInnerIterator = rightInnerIterator + 1;
+        rightIterator = rightIterator + 1;
+      }
+    }
+
+    if (matches === otherIndexedSortedSet.length && this.length != otherIndexedSortedSet.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 export { IndexedSortedSet };
