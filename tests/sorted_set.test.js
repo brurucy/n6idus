@@ -200,7 +200,6 @@ test('Delete nth from sorted set', () => {
 });
 
 test('SameAs', () => {
-
   let iSortedSetA = new IndexedSortedSet(leq, 3);
 
   iSortedSetA.add([1, 2, 3]);
@@ -224,8 +223,7 @@ test('SameAs', () => {
   iSortedSetA.add([1, 1, 1]);
 
   expect(iSortedSetA.sameAs(iSortedSetB)).toEqual(false);
-
-})
+});
 
 test('Union', () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
@@ -295,9 +293,9 @@ test('Difference', () => {
   const ISortedSetC = iSortedSetA.difference(iSortedSetB);
 
   expect(ISortedSetC.length).toEqual(1);
-})
+});
 
-test('Symmetric Difference',  () => {
+test('Symmetric Difference', () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
@@ -319,4 +317,101 @@ test('Symmetric Difference',  () => {
 
   let ISortedSetC = iSortedSetA.symmetricDifference(iSortedSetB);
   expect(ISortedSetC.length).toEqual(2);
-})
+});
+
+test('isSupersetOf', () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.add([1, 2, 3]);
+  iSortedSetA.add([1, 2, 2]);
+  iSortedSetA.add([1, 6, 7]);
+  iSortedSetA.add([1, 3, 5]);
+  iSortedSetA.add([1, 2, 4]);
+  iSortedSetA.add([1, 9, 9]);
+
+  iSortedSetB.add([1, 2, 3]);
+  iSortedSetB.add([1, 2, 2]);
+  iSortedSetB.add([1, 6, 7]);
+  iSortedSetB.add([1, 3, 5]);
+  iSortedSetB.add([1, 2, 4]);
+
+  expect(iSortedSetA.isSupersetOf(iSortedSetB)).toEqual(true);
+});
+
+test('isProperSupersetOf', () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.add([1, 2, 3]);
+  iSortedSetA.add([1, 2, 2]);
+  iSortedSetA.add([1, 6, 7]);
+  iSortedSetA.add([1, 3, 5]);
+  iSortedSetA.add([1, 2, 4]);
+
+  iSortedSetB.add([1, 2, 3]);
+  iSortedSetB.add([1, 2, 2]);
+  iSortedSetB.add([1, 6, 7]);
+  iSortedSetB.add([1, 3, 5]);
+  iSortedSetB.add([1, 2, 4]);
+
+  expect(iSortedSetA.isProperSupersetOf(iSortedSetB)).toEqual(false);
+});
+
+test('isSubsetOf', () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.add([1, 2, 3]);
+  iSortedSetA.add([1, 2, 2]);
+  iSortedSetA.add([1, 6, 7]);
+  iSortedSetA.add([1, 3, 5]);
+  iSortedSetA.add([1, 2, 4]);
+  iSortedSetA.add([1, 9, 9]);
+
+  iSortedSetB.add([1, 2, 3]);
+  iSortedSetB.add([1, 2, 2]);
+  iSortedSetB.add([1, 6, 7]);
+  iSortedSetB.add([1, 3, 5]);
+  iSortedSetB.add([1, 2, 4]);
+
+  expect(iSortedSetB.isSubsetOf(iSortedSetB)).toEqual(true);
+});
+
+test('isProperSupersetOf', () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.add([1, 2, 3]);
+  iSortedSetA.add([1, 2, 2]);
+  iSortedSetA.add([1, 6, 7]);
+  iSortedSetA.add([1, 3, 5]);
+  iSortedSetA.add([1, 2, 4]);
+
+  iSortedSetB.add([1, 2, 3]);
+  iSortedSetB.add([1, 2, 2]);
+  iSortedSetB.add([1, 6, 7]);
+  iSortedSetB.add([1, 3, 5]);
+  iSortedSetB.add([1, 2, 4]);
+
+  expect(iSortedSetB.isProperSubsetOf(iSortedSetB)).toEqual(false);
+});
+
+test('isDisjointWith', () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.add([1, 2, 3]);
+  iSortedSetA.add([1, 2, 2]);
+  iSortedSetA.add([1, 6, 7]);
+  iSortedSetA.add([1, 3, 5]);
+  iSortedSetA.add([1, 2, 4]);
+
+  iSortedSetB.add([3, 2, 3]);
+  iSortedSetB.add([3, 2, 2]);
+  iSortedSetB.add([3, 6, 7]);
+  iSortedSetB.add([3, 3, 5]);
+  iSortedSetB.add([3, 2, 4]);
+
+  expect(iSortedSetB.isDisjointWith(iSortedSetA)).toEqual(true);
+});
