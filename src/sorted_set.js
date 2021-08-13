@@ -1,4 +1,4 @@
-import { SortedArraySet } from "./sorted_array.js";
+import { SortedArraySet } from './sorted_array.js';
 
 class SortedSet {
   bucketSize = 1000;
@@ -12,10 +12,7 @@ class SortedSet {
   #balance(firstLevelIndex) {
     const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
     const newBucketContents = this.buckets[firstLevelIndex].bucket.slice(-half);
-    const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(
-      0,
-      half
-    );
+    const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(0, half);
     const newArraySet = new SortedArraySet(this.cmp);
     this.buckets[firstLevelIndex] = new SortedArraySet(this.cmp);
     for (const item of newBucketContents) {
@@ -34,11 +31,7 @@ class SortedSet {
     while (low < high) {
       mid = (low + high) >>> 1;
       let midVal = this.buckets[mid].max;
-      if (
-        midVal !== undefined &&
-        this.cmp(midVal, item) &&
-        !this.cmp(item, midVal)
-      ) {
+      if (midVal !== undefined && this.cmp(midVal, item) && !this.cmp(item, midVal)) {
         low = mid + 1;
       } else {
         high = mid;
@@ -46,7 +39,7 @@ class SortedSet {
     }
     return high;
   }
-  add(item) {
+  push(item) {
     let firstLevelIndex = this.#bucketIndexOf(item);
     if (this.buckets[firstLevelIndex] === undefined) {
       firstLevelIndex = firstLevelIndex - 1;

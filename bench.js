@@ -37,8 +37,8 @@ const intCmp = (x, y) => {
 
 const refresh = () => {
   return [
-    { name: 'IndexedSSet', structure: new IndexedSortedSet(intLeq, 1000) },
-    { name: 'SSet', structure: new SortedSet(intLeq, 1000) },
+    { name: 'IndexedSSet', structure: new IndexedSortedSet(intLeq, 500) },
+    { name: 'SSet', structure: new SortedSet(intLeq, 500) },
     { name: 'Collections SSet', structure: new CollectionsSortedSet(undefined, undefined, intCmp) },
     { name: 'Fastest BTree', structure: new BTreeSet(undefined, intCmp) },
     { name: 'Functional Tree', structure: FunctionalRedBlackTree() },
@@ -67,10 +67,16 @@ for (let k = 0; k < testArrays.length; k++) {
       }
     } else {
       for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.add(testArrays[k][i]);
+        a.structure.push(testArrays[k][i]);
       }
     }
-    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+    return {
+      n: sizes[k],
+      ordering: 'random',
+      operation: 'add',
+      name: a.name,
+      duration: (Microtime.now() - now) / 1000,
+    };
   });
 
   const gettingRandom = structures.map((a) => {
@@ -92,7 +98,13 @@ for (let k = 0; k < testArrays.length; k++) {
         a.structure.has(testArrays[k][i]);
       }
     }
-    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+    return {
+      n: sizes[k],
+      ordering: 'random',
+      operation: 'get',
+      name: a.name,
+      duration: (Microtime.now() - now) / 1000,
+    };
   });
 
   const gettingByIndexRandom = structures
@@ -102,7 +114,13 @@ for (let k = 0; k < testArrays.length; k++) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.select(i);
       }
-      return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+      return {
+        n: sizes[k],
+        ordering: 'random',
+        operation: 'select',
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
     });
 
   const deletingRandom = structures.map((a) => {
@@ -124,7 +142,13 @@ for (let k = 0; k < testArrays.length; k++) {
         a.structure.delete(testArrays[k][i]);
       }
     }
-    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+    return {
+      n: sizes[k],
+      ordering: 'random',
+      operation: 'delete',
+      name: a.name,
+      duration: (Microtime.now() - now) / 1000,
+    };
   });
 
   const addingSequential = structures.map((a) => {
@@ -143,10 +167,16 @@ for (let k = 0; k < testArrays.length; k++) {
       }
     } else {
       for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.add(i);
+        a.structure.push(i);
       }
     }
-    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+    return {
+      n: sizes[k],
+      ordering: 'random',
+      operation: 'add',
+      name: a.name,
+      duration: (Microtime.now() - now) / 1000,
+    };
   });
 
   const gettingSequential = structures.map((a) => {
@@ -168,7 +198,13 @@ for (let k = 0; k < testArrays.length; k++) {
         a.structure.has(i);
       }
     }
-    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+    return {
+      n: sizes[k],
+      ordering: 'sequential',
+      operation: 'get',
+      name: a.name,
+      duration: (Microtime.now() - now) / 1000,
+    };
   });
 
   const gettingByIndexSequential = structures
@@ -178,7 +214,13 @@ for (let k = 0; k < testArrays.length; k++) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.select(i);
       }
-      return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+      return {
+        n: sizes[k],
+        ordering: 'sequential',
+        operation: 'select',
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
     });
 
   const deletingSequential = structures.map((a) => {
@@ -200,11 +242,16 @@ for (let k = 0; k < testArrays.length; k++) {
         a.structure.delete(i);
       }
     }
-    return { name: a.name, duration: (Microtime.now() - now) / 1000 };
+    return {
+      n: sizes[k],
+      ordering: 'sequential',
+      operation: 'deletion',
+      name: a.name,
+      duration: (Microtime.now() - now) / 1000,
+    };
   });
 
-  benches[k] = {
-    data: sizes[k],
+  benches[k] = [
     addingRandom,
     gettingRandom,
     gettingByIndexRandom,
@@ -213,9 +260,9 @@ for (let k = 0; k < testArrays.length; k++) {
     gettingSequential,
     gettingByIndexSequential,
     deletingSequential,
-  };
+  ];
 }
 
-for (const bench of benches) {
+for (const bench of benches.flat()) {
   console.log(bench);
 }

@@ -2,14 +2,17 @@ import { SortedArraySet } from './sorted_array.js';
 import { FenwickArray } from './index.js';
 
 class IndexedSortedSet {
-  bucketSize = 1000;
   buckets = [];
   index = new FenwickArray([0]);
   length = 0;
   constructor(cmp, bucketSize) {
-    this.cmp = cmp;
+    this.cmp =
+      cmp ??
+      function (x, y) {
+        return x <= y;
+      };
     this.buckets[0] = new SortedArraySet(this.cmp);
-    this.bucketSize = bucketSize;
+    this.bucketSize = bucketSize ?? 500;
   }
   #balance(firstLevelIndex) {
     const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
@@ -54,12 +57,181 @@ class IndexedSortedSet {
     }
   }
   #buildIndex() {
-    //const index = new Array(this.buckets.length);
-    // for (let i = 0; i < this.buckets.length; i++) {
-    //   index[i] = this.buckets[i].bucket.length;
-    //   length += index[i];
-    // }
     this.index = new FenwickArray(this.buckets, true);
+  }
+  *forward() {
+    let length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        yield [length, this.buckets[i].select(j)];
+        length += 1;
+      }
+    }
+  }
+  map(callbackFn, cmp, bucketSize) {
+    const cmpFunc = cmp ?? this.cmp;
+    const bS = bucketSize ?? this.bucketSize;
+    const out = new IndexedSortedSet(cmpFunc, bS);
+    let length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        out.push(callbackFn([length, this.buckets[i].bucket.select(j)]));
+        length += 1;
+      }
+    }
+    return out;
+  }
+  mapToArray(callbackFn) {
+    const out = [];
+    let length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        out.push(callbackFn([j, this.buckets[i].bucket.select(j)]));
+        length += 1;
+      }
+    }
+    return out;
+  }
+  reduce(callbackFn, acc) {
+    let value = acc;
+    const length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        value = callbackFn([length, this.buckets[i].bucket.select(j)], value);
+        length += 1;
+      }
+    }
+    return value;
+  }
+  reduceRight(callbackFn, acc) {
+    let value = acc;
+    const length = 0;
+    for (let i = this.buckets.length - 1; i >= 0; i--) {
+      for (let j = this.buckets[i].bucket.length - 1; j >= 0; j--) {
+        value = callbackFn([length, this.buckets[i].bucket.select(j)], value);
+        length += 1;
+      }
+    }
+    return value;
+  }
+  forEach(callbackFn) {
+    const length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        callbackFn([length, this.this.buckets[i].bucket.select(j)]);
+        length += 1;
+      }
+    }
+  }
+  *rangeForwardByIndex(from, to) {
+    const [fromFirstLevelIndex, fromSecondLevelIndex] = this.#locate(from);
+    const [toFirstLevelIndex, toSecondLevelIndex] = this.#locate(to);
+    let length = from;
+    for (let i = fromFirstLevelIndex; i < toFirstLevelIndex; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        yield [length, this.this.buckets[i].bucket.select(j)];
+        if (toFirstLevelIndex === i && toSecondLevelIndex === j) {
+          break;
+        }
+        length += 1;
+      }
+    }
+  }
+  *rangeForwardByValue(from, to) {
+    const fromFirstLevelIndex = this.#bucketIndexOf(from);
+    const secondLevelIndex = this.bucketSize[fromFirstLevelIndex].indexOf(from);
+    let length = 0;
+    for (let i = fromFirstLevelIndex; i < this.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        yield [length, this.buckets[i].bucket.select(j)];
+        if (this.cmp(this.buckets[i].bucket.select(j), to) && this.cmp(to, this.buckets[i].bucket.select(j))) {
+          break;
+        }
+        length += 1;
+      }
+    }
+  }
+  *backward() {
+    let length = this.length;
+    for (let i = this.buckets.length - 1; i >= 0; i--) {
+      for (let j = this.buckets[i].bucket.length - 1; j >= 0; j--) {
+        yield [length, this.buckets[i].select(j)];
+        length -= 1;
+      }
+    }
+  }
+  *rangeBackwardsByIndex(from, to) {
+    const [fromFirstLevelIndex, fromSecondLevelIndex] = this.#locate(from);
+    const [toFirstLevelIndex, toSecondLevelIndex] = this.#locate(to);
+    let length = from;
+    for (let i = fromFirstLevelIndex; i >= toFirstLevelIndex; i--) {
+      for (let j = this.buckets[i].bucket.length - 1; j >= 0; j++) {
+        yield [length, this.this.buckets[i].bucket.select(j)];
+        if (toFirstLevelIndex === i && toSecondLevelIndex === j) {
+          break;
+        }
+        length += 1;
+      }
+    }
+  }
+  *rangeBackwardsByValue(from, to) {
+    const fromFirstLevelIndex = this.#bucketIndexOf(from);
+    const secondLevelIndex = this.bucketSize[fromFirstLevelIndex].indexOf(from);
+    let length = from;
+    for (let i = fromFirstLevelIndex; i >= 0; i++) {
+      for (let j = this.buckets[i].bucket.length - 1; j >= 0; j++) {
+        yield [length, this.buckets[i].bucket.select(j)];
+        if (this.cmp(this.buckets[i].bucket.select(j), to) && this.cmp(to, this.buckets[i].bucket.select(j))) {
+          break;
+        }
+        length -= 1;
+      }
+    }
+  }
+  sliceByIndex(from, to) {
+    const [fromFirstLevelIndex, fromSecondLevelIndex] = this.#locate(from);
+    const [toFirstLevelIndex, toSecondLevelIndex] = this.#locate(to);
+    const bucketArray = [];
+
+    if (fromFirstLevelIndex === toFirstLevelIndex) {
+      bucketArray.push(this.buckets[fromFirstLevelIndex].bucket.slice(fromSecondLevelIndex, toSecondLevelIndex + 1));
+    } else {
+      const firstSlice = this.buckets[fromFirstLevelIndex].bucket.slice(fromSecondLevelIndex);
+      const lastSlice = this.buckets[toFirstLevelIndex].bucket.slice(0, toSecondLevelIndex + 1);
+      bucketArray.push(firstSlice);
+      if (toFirstLevelIndex - fromFirstLevelIndex > 1) {
+        bucketArray.push(...this.buckets.slice(fromFirstLevelIndex + 1, toFirstLevelIndex));
+      }
+      bucketArray.push(lastSlice);
+    }
+    const newIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+    newIndexedSortedSet.fromPreBucketedArray(bucketArray);
+
+    return newIndexedSortedSet;
+  }
+  sliceByValue(from, to) {
+    const fromFirstLevelIndex = this.#bucketIndexOf(from);
+    const fromSecondLevelIndex = this.buckets[fromFirstLevelIndex].indexOf(from);
+    const toFirstLevelIndex = this.#bucketIndexOf(to);
+    const toSecondLevelIndex = this.buckets[toFirstLevelIndex].indexOf(to);
+
+    const bucketArray = [];
+
+    if (fromFirstLevelIndex === toFirstLevelIndex) {
+      bucketArray.push(this.buckets[fromFirstLevelIndex].bucket.slice(fromSecondLevelIndex, toSecondLevelIndex + 1));
+    } else {
+      const firstSlice = this.buckets[fromFirstLevelIndex].bucket.slice(fromSecondLevelIndex);
+      const lastSlice = this.buckets[toFirstLevelIndex].bucket.slice(0, toSecondLevelIndex + 1);
+      bucketArray.push(firstSlice);
+      if (toFirstLevelIndex - fromFirstLevelIndex > 1) {
+        bucketArray.push(...this.buckets.slice(fromFirstLevelIndex + 1, toFirstLevelIndex));
+      }
+      bucketArray.push(lastSlice);
+    }
+    const newIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+    newIndexedSortedSet.fromPreBucketedArray(bucketArray);
+
+    return newIndexedSortedSet;
   }
   fromPreBucketedArray(preBucketedAndSortedArray) {
     const arraySets = new Array(preBucketedAndSortedArray.length);
@@ -75,7 +247,14 @@ class IndexedSortedSet {
     this.length = length;
     this.#buildIndex();
   }
-  add(item) {
+  toArray() {
+    const flatSortedArray = [];
+    for (const item of this.buckets) {
+      flatSortedArray.push(...item.bucket);
+    }
+    return flatSortedArray;
+  }
+  push(item) {
     let firstLevelIndex = this.#bucketIndexOf(item);
     if (this.buckets[firstLevelIndex] === undefined) {
       firstLevelIndex = firstLevelIndex - 1;
@@ -123,17 +302,15 @@ class IndexedSortedSet {
         if (this.length !== 1) {
           this.buckets.splice(firstLevelIndex, 1);
         }
-        // const index = new Array(this.buckets.length);
-        // for (let i = 0; i < this.buckets.length; i++) {
-        //   index[i] = this.buckets[i].bucket.length;
-        // }
         this.index = new FenwickArray(this.buckets, true);
       }
       this.length = this.length - 1;
       return deletion;
     }
   }
-  remove(nth) {
+  deleteRangeByIndex(from, to) {}
+  deleteRangeByValue(from, to) {}
+  deleteByIndex(nth) {
     const indexes = this.#locate(nth);
     let [firstLevelIndex, secondLevelIndex] = [0, 0];
     if (indexes === null) {
@@ -149,10 +326,6 @@ class IndexedSortedSet {
           if (this.length !== 1) {
             this.buckets.splice(firstLevelIndex, 1);
           }
-          // const index = new Array(this.buckets.length);
-          // for (let i = 0; i < this.buckets.length; i++) {
-          //   index[i] = this.buckets[i].bucket.length;
-          // }
           this.index = new FenwickArray(this.buckets, true);
         }
         this.length = this.length - 1;

@@ -415,3 +415,20 @@ test('isDisjointWith', () => {
 
   expect(iSortedSetB.isDisjointWith(iSortedSetA)).toEqual(true);
 });
+
+test('forward iterator', () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.add([1, 2, 3]);
+  iSortedSetA.add([1, 2, 2]);
+  iSortedSetA.add([1, 6, 7]);
+  iSortedSetA.add([1, 3, 5]);
+  iSortedSetA.add([1, 2, 4]);
+
+  let length = 0;
+  for (const item of iSortedSetA.forward()) {
+    length += 1;
+  }
+
+  expect(length).toEqual(iSortedSetA.length);
+});

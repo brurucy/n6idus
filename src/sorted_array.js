@@ -38,11 +38,7 @@ class SortedArraySet {
     while (low < high) {
       mid = (low + high) >>> 1;
       let midVal = this.bucket[mid];
-      if (
-        midVal !== undefined &&
-        this.cmp(midVal, item) &&
-        !this.cmp(item, midVal)
-      ) {
+      if (midVal !== undefined && this.cmp(midVal, item) && !this.cmp(item, midVal)) {
         low = mid + 1;
       } else {
         high = mid;
