@@ -15,20 +15,18 @@ The main advantage over all of these, is that it supports indexing *by position*
 
 To implement:
 
-- forward iteration by position
-- forward iteration by value
-- reverse iteration by position
-- reverse iteration by value
-- range forward iteration by position
-- range forward iteration by value
-- range backwards iteration by position
-- range backwards iteration by value
-- bulk delete by position
-- bulk delete by value
 - getMin
 - getMax
 - popMin
 - popMax
 - nextHigherKey
 - nextLowerKey
-- toArray
+- filter
+- every
+- some
+
+Release plan:
+
+1. 0.1.0 - The current indexed sorted set implementation
+2. 0.2.0 - A not-indexed sorted set implementation (halfway done)
+3. 0.3.0 - An indexed sorted set with hash

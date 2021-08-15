@@ -16,7 +16,6 @@ const leastSignificantBit = (value) => {
 };
 
 class FenwickArray {
-  //innerStructure = [];
   constructor(arr, isArrayOfArrays) {
     if (isArrayOfArrays !== undefined) {
       this.#initFromArrayOfArrays(arr);

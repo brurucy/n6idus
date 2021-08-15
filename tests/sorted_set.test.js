@@ -1,4 +1,4 @@
-import { IndexedSortedSet } from '../src/mod';
+import { IndexedSortedSet } from "../src/mod";
 
 const leq = (a, b) => {
   let isItLeq = true;
@@ -22,25 +22,25 @@ const shuffle = (arr) => {
   return newArr;
 };
 
-test('add to sorted set, simple', () => {
+test("push to sorted set, simple", () => {
   let ISortedSet = new IndexedSortedSet(leq, 3);
 
-  ISortedSet.add([1, 2, 3]);
-  ISortedSet.add([1, 2, 2]);
+  ISortedSet.push([1, 2, 3]);
+  ISortedSet.push([1, 2, 2]);
 
   expect(ISortedSet.buckets[0].bucket[0]).toEqual([1, 2, 2]);
   expect(ISortedSet.buckets[0].bucket[1]).toEqual([1, 2, 3]);
 });
 
-test('add to sorted set, with balance', () => {
+test("push to sorted set, with balance", () => {
   let ISortedSet = new IndexedSortedSet(leq, 3);
 
-  ISortedSet.add([1, 2, 3]);
-  ISortedSet.add([1, 2, 2]);
-  ISortedSet.add([1, 6, 7]);
-  ISortedSet.add([1, 3, 5]);
-  ISortedSet.add([1, 2, 4]);
-  ISortedSet.add([1, 9, 9]);
+  ISortedSet.push([1, 2, 3]);
+  ISortedSet.push([1, 2, 2]);
+  ISortedSet.push([1, 6, 7]);
+  ISortedSet.push([1, 3, 5]);
+  ISortedSet.push([1, 2, 4]);
+  ISortedSet.push([1, 9, 9]);
 
   expect(ISortedSet.buckets[0].bucket[0]).toEqual([1, 2, 2]);
   expect(ISortedSet.buckets[0].bucket[1]).toEqual([1, 2, 3]);
@@ -50,7 +50,7 @@ test('add to sorted set, with balance', () => {
   expect(ISortedSet.buckets[2].bucket[1]).toEqual([1, 9, 9]);
 });
 
-test('add to sorted set, order and length assurance', () => {
+test("push to sorted set, order and length assurance", () => {
   const ISortedSet = new IndexedSortedSet((x, y) => {
     return x <= y;
   }, 10);
@@ -61,7 +61,7 @@ test('add to sorted set, order and length assurance', () => {
   dataArr = shuffle(dataArr);
 
   for (const item of dataArr) {
-    ISortedSet.add(item);
+    ISortedSet.push(item);
   }
 
   expect(ISortedSet.length).toEqual(1000);
@@ -78,15 +78,15 @@ test('add to sorted set, order and length assurance', () => {
   }
 });
 
-test('getting the i-th element', () => {
+test("getting the i-th element", () => {
   let ISortedSet = new IndexedSortedSet(leq, 3);
 
-  ISortedSet.add([1, 2, 3]);
-  ISortedSet.add([1, 2, 2]);
-  ISortedSet.add([1, 6, 7]);
-  ISortedSet.add([1, 3, 5]);
-  ISortedSet.add([1, 2, 4]);
-  ISortedSet.add([1, 9, 9]);
+  ISortedSet.push([1, 2, 3]);
+  ISortedSet.push([1, 2, 2]);
+  ISortedSet.push([1, 6, 7]);
+  ISortedSet.push([1, 3, 5]);
+  ISortedSet.push([1, 2, 4]);
+  ISortedSet.push([1, 9, 9]);
 
   expect(ISortedSet.select(0)).toEqual([1, 2, 2]);
   expect(ISortedSet.select(1)).toEqual([1, 2, 3]);
@@ -96,15 +96,15 @@ test('getting the i-th element', () => {
   expect(ISortedSet.select(5)).toEqual([1, 9, 9]);
 });
 
-test('has', () => {
+test("has", () => {
   let ISortedSet = new IndexedSortedSet(leq, 3);
 
-  ISortedSet.add([1, 2, 3]);
-  ISortedSet.add([1, 2, 2]);
-  ISortedSet.add([1, 6, 7]);
-  ISortedSet.add([1, 3, 5]);
-  ISortedSet.add([1, 2, 4]);
-  ISortedSet.add([1, 9, 9]);
+  ISortedSet.push([1, 2, 3]);
+  ISortedSet.push([1, 2, 2]);
+  ISortedSet.push([1, 6, 7]);
+  ISortedSet.push([1, 3, 5]);
+  ISortedSet.push([1, 2, 4]);
+  ISortedSet.push([1, 9, 9]);
 
   expect(ISortedSet.has([1, 2, 2])).toEqual(true);
   expect(ISortedSet.has([1, 2, 3])).toEqual(true);
@@ -118,15 +118,15 @@ test('has', () => {
   expect(ISortedSet.has([1, 1, 1])).toEqual(false);
 });
 
-test('Delete from sorted set', () => {
+test("Delete from sorted set", () => {
   let ISortedSet = new IndexedSortedSet(leq, 3);
 
-  ISortedSet.add([1, 2, 3]);
-  ISortedSet.add([1, 2, 2]);
-  ISortedSet.add([1, 6, 7]);
-  ISortedSet.add([1, 3, 5]);
-  ISortedSet.add([1, 2, 4]);
-  ISortedSet.add([1, 9, 9]);
+  ISortedSet.push([1, 2, 3]);
+  ISortedSet.push([1, 2, 2]);
+  ISortedSet.push([1, 6, 7]);
+  ISortedSet.push([1, 3, 5]);
+  ISortedSet.push([1, 2, 4]);
+  ISortedSet.push([1, 9, 9]);
 
   expect(ISortedSet.has([1, 2, 3])).toEqual(true);
   ISortedSet.delete([1, 2, 3]);
@@ -156,15 +156,15 @@ test('Delete from sorted set', () => {
   expect(ISortedSet.buckets[0].bucket).toEqual([]);
 });
 
-test('Get nth from sorted set', () => {
+test("Get nth from sorted set", () => {
   let ISortedSet = new IndexedSortedSet(leq, 3);
 
-  ISortedSet.add([1, 2, 3]);
-  ISortedSet.add([1, 2, 2]);
-  ISortedSet.add([1, 6, 7]);
-  ISortedSet.add([1, 3, 5]);
-  ISortedSet.add([1, 2, 4]);
-  ISortedSet.add([1, 9, 9]);
+  ISortedSet.push([1, 2, 3]);
+  ISortedSet.push([1, 2, 2]);
+  ISortedSet.push([1, 6, 7]);
+  ISortedSet.push([1, 3, 5]);
+  ISortedSet.push([1, 2, 4]);
+  ISortedSet.push([1, 9, 9]);
 
   expect(ISortedSet.select(0)).toEqual([1, 2, 2]);
   expect(ISortedSet.select(1)).toEqual([1, 2, 3]);
@@ -174,261 +174,511 @@ test('Get nth from sorted set', () => {
   expect(ISortedSet.select(5)).toEqual([1, 9, 9]);
 });
 
-test('Delete nth from sorted set', () => {
+test("Delete nth from sorted set", () => {
   let ISortedSet = new IndexedSortedSet(leq, 3);
 
-  ISortedSet.add([1, 2, 3]);
-  ISortedSet.add([1, 2, 2]);
-  ISortedSet.add([1, 6, 7]);
-  ISortedSet.add([1, 3, 5]);
-  ISortedSet.add([1, 2, 4]);
-  ISortedSet.add([1, 9, 9]);
+  ISortedSet.push([1, 2, 3]);
+  ISortedSet.push([1, 2, 2]);
+  ISortedSet.push([1, 6, 7]);
+  ISortedSet.push([1, 3, 5]);
+  ISortedSet.push([1, 2, 4]);
+  ISortedSet.push([1, 9, 9]);
 
-  ISortedSet.remove(0);
+  ISortedSet.deleteByIndex(0);
   expect(ISortedSet.select(0)).toEqual([1, 2, 3]);
-  ISortedSet.remove(4);
+  ISortedSet.deleteByIndex(4);
   expect(ISortedSet.select(3)).toEqual([1, 6, 7]);
-  ISortedSet.remove(3);
+  ISortedSet.deleteByIndex(3);
   expect(ISortedSet.select(2)).toEqual([1, 3, 5]);
-  ISortedSet.remove(2);
+  ISortedSet.deleteByIndex(2);
   expect(ISortedSet.select(1)).toEqual([1, 2, 4]);
-  ISortedSet.remove(1);
+  ISortedSet.deleteByIndex(1);
   expect(ISortedSet.select(0)).toEqual([1, 2, 3]);
-  ISortedSet.remove(0);
+  ISortedSet.deleteByIndex(0);
   expect(ISortedSet.select(0)).toEqual(null);
   expect(ISortedSet.buckets[0].bucket).toEqual([]);
 });
 
-test('SameAs', () => {
+test("SameAs", () => {
   let iSortedSetA = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
-  iSortedSetA.add([1, 9, 9]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 9, 9]);
 
   let iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetB.add([1, 2, 3]);
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 6, 7]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 4]);
-  iSortedSetB.add([1, 9, 9]);
+  iSortedSetB.push([1, 2, 3]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
+  iSortedSetB.push([1, 9, 9]);
 
   expect(iSortedSetA.sameAs(iSortedSetB)).toEqual(true);
 
-  iSortedSetA.add([1, 1, 1]);
+  iSortedSetA.push([1, 1, 1]);
 
   expect(iSortedSetA.sameAs(iSortedSetB)).toEqual(false);
 });
 
-test('Union', () => {
+test("Union", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
-  iSortedSetA.add([1, 9, 9]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 9, 9]);
 
-  iSortedSetB.add([1, 2, 6]);
-  iSortedSetB.add([1, 3, 9]);
+  iSortedSetB.push([1, 2, 6]);
+  iSortedSetB.push([1, 3, 9]);
 
   const ISortedSetC = iSortedSetA.union(iSortedSetB);
 
   expect(ISortedSetC.length).toEqual(8);
 });
 
-test('Intersection', () => {
+test("Intersection", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
-  iSortedSetA.add([1, 9, 9]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 9, 9]);
 
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 1]);
-  iSortedSetB.add([1, 2, 0]);
-  iSortedSetB.add([1, 2, 6]);
-  iSortedSetB.add([1, 2, 7]);
-  iSortedSetB.add([1, 2, 8]);
-  iSortedSetB.add([1, 2, 9]);
-  iSortedSetB.add([1, 2, 16]);
-  iSortedSetB.add([1, 9, 9]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 1]);
+  iSortedSetB.push([1, 2, 0]);
+  iSortedSetB.push([1, 2, 6]);
+  iSortedSetB.push([1, 2, 7]);
+  iSortedSetB.push([1, 2, 8]);
+  iSortedSetB.push([1, 2, 9]);
+  iSortedSetB.push([1, 2, 16]);
+  iSortedSetB.push([1, 9, 9]);
 
   const ISortedSetC = iSortedSetA.intersection(iSortedSetB);
 
   expect(ISortedSetC.length).toEqual(3);
 });
 
-test('Difference', () => {
+test("Difference", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
-  iSortedSetA.add([1, 3, 1]);
-  iSortedSetA.add([1, 9, 9]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 3, 1]);
+  iSortedSetA.push([1, 9, 9]);
 
-  iSortedSetB.add([1, 2, 3]);
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 6, 7]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 4]);
-  iSortedSetB.add([1, 9, 9]);
+  iSortedSetB.push([1, 2, 3]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
+  iSortedSetB.push([1, 9, 9]);
 
   const ISortedSetC = iSortedSetA.difference(iSortedSetB);
 
   expect(ISortedSetC.length).toEqual(1);
 });
 
-test('Symmetric Difference', () => {
+test("Symmetric Difference", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
-  iSortedSetA.add([1, 3, 1]);
-  iSortedSetA.add([1, 9, 9]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 3, 1]);
+  iSortedSetA.push([1, 9, 9]);
 
-  iSortedSetB.add([1, 2, 3]);
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 6, 7]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 4]);
-  iSortedSetB.add([1, 9, 9]);
-  iSortedSetB.add([1, 8, 9]);
+  iSortedSetB.push([1, 2, 3]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
+  iSortedSetB.push([1, 9, 9]);
+  iSortedSetB.push([1, 8, 9]);
 
   let ISortedSetC = iSortedSetA.symmetricDifference(iSortedSetB);
   expect(ISortedSetC.length).toEqual(2);
 });
 
-test('isSupersetOf', () => {
+test("isSupersetOf", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
-  iSortedSetA.add([1, 9, 9]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 9, 9]);
 
-  iSortedSetB.add([1, 2, 3]);
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 6, 7]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 4]);
+  iSortedSetB.push([1, 2, 3]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
 
   expect(iSortedSetA.isSupersetOf(iSortedSetB)).toEqual(true);
 });
 
-test('isProperSupersetOf', () => {
+test("isProperSupersetOf", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
 
-  iSortedSetB.add([1, 2, 3]);
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 6, 7]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 4]);
+  iSortedSetB.push([1, 2, 3]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
 
   expect(iSortedSetA.isProperSupersetOf(iSortedSetB)).toEqual(false);
 });
 
-test('isSubsetOf', () => {
+test("isSubsetOf", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
-  iSortedSetA.add([1, 9, 9]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 9, 9]);
 
-  iSortedSetB.add([1, 2, 3]);
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 6, 7]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 4]);
+  iSortedSetB.push([1, 2, 3]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
 
   expect(iSortedSetB.isSubsetOf(iSortedSetB)).toEqual(true);
 });
 
-test('isProperSupersetOf', () => {
+test("isProperSupersetOf", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
 
-  iSortedSetB.add([1, 2, 3]);
-  iSortedSetB.add([1, 2, 2]);
-  iSortedSetB.add([1, 6, 7]);
-  iSortedSetB.add([1, 3, 5]);
-  iSortedSetB.add([1, 2, 4]);
+  iSortedSetB.push([1, 2, 3]);
+  iSortedSetB.push([1, 2, 2]);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
 
   expect(iSortedSetB.isProperSubsetOf(iSortedSetB)).toEqual(false);
 });
 
-test('isDisjointWith', () => {
+test("isDisjointWith", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
   const iSortedSetB = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
 
-  iSortedSetB.add([3, 2, 3]);
-  iSortedSetB.add([3, 2, 2]);
-  iSortedSetB.add([3, 6, 7]);
-  iSortedSetB.add([3, 3, 5]);
-  iSortedSetB.add([3, 2, 4]);
+  iSortedSetB.push([3, 2, 3]);
+  iSortedSetB.push([3, 2, 2]);
+  iSortedSetB.push([3, 6, 7]);
+  iSortedSetB.push([3, 3, 5]);
+  iSortedSetB.push([3, 2, 4]);
 
   expect(iSortedSetB.isDisjointWith(iSortedSetA)).toEqual(true);
 });
 
-test('forward iterator', () => {
+test("forward iterator", () => {
   const iSortedSetA = new IndexedSortedSet(leq, 3);
 
-  iSortedSetA.add([1, 2, 3]);
-  iSortedSetA.add([1, 2, 2]);
-  iSortedSetA.add([1, 6, 7]);
-  iSortedSetA.add([1, 3, 5]);
-  iSortedSetA.add([1, 2, 4]);
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
 
   let length = 0;
-  for (const item of iSortedSetA.forward()) {
+  for (const item of iSortedSetA.makeForwardCursor()) {
     length += 1;
   }
 
   expect(length).toEqual(iSortedSetA.length);
+});
+
+test("backwards iterator", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  let length = 0;
+  for (const item of iSortedSetA.makeBackwardsCursor()) {
+    length += 1;
+  }
+  expect(length).toEqual(iSortedSetA.length);
+});
+
+test("forward range iterator by index", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  let length = 0;
+  for (const item of iSortedSetA.makeForwardCursorByIndex(1, 4)) {
+    length += 1;
+  }
+
+  expect(length).toEqual(4);
+});
+test("forward range iterator by value", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  let length = 0;
+  for (const item of iSortedSetA.makeForwardCursorByValue(
+    [1, 2, 4],
+    [1, 6, 7]
+  )) {
+    length += 1;
+  }
+
+  expect(length).toEqual(3);
+});
+test("backwards range iterator by index", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  let length = 0;
+  for (const item of iSortedSetA.makeBackwardsCursorByIndex(4, 1)) {
+    length += 1;
+  }
+
+  expect(length).toEqual(4);
+});
+test("backwards range iterator by value", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  let length = 0;
+  for (const item of iSortedSetA.makeBackwardsCursorByValue(
+    [1, 6, 7],
+    [1, 2, 4]
+  )) {
+    length += 1;
+  }
+
+  expect(length).toEqual(3);
+});
+
+test("slice by index", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
+  iSortedSetB.push([1, 2, 3]);
+
+  const iSortedSetC = iSortedSetA.sliceByIndex(1, 4);
+
+  expect(iSortedSetC.sameAs(iSortedSetB)).toEqual(true);
+});
+
+test("slice by value case 0", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  iSortedSetB.push([1, 2, 4]);
+  iSortedSetB.push([1, 2, 3]);
+
+  const iSortedSetC = iSortedSetA.sliceByValue([1, 2, 3], [1, 2, 4]);
+
+  expect(iSortedSetC.sameAs(iSortedSetB)).toEqual(true);
+});
+
+test("slice by value case 1", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+
+  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  iSortedSetB.push([1, 6, 7]);
+  iSortedSetB.push([1, 3, 5]);
+  iSortedSetB.push([1, 2, 4]);
+  iSortedSetB.push([1, 2, 3]);
+
+  const iSortedSetC = iSortedSetA.sliceByValue([1, 2, 3], [1, 6, 7]);
+
+  expect(iSortedSetC.sameAs(iSortedSetB)).toEqual(true);
+});
+
+test("slice by value case 2", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 6, 9]);
+  iSortedSetA.push([1, 1, 2]);
+  iSortedSetA.push([1, 9, 9]);
+
+  const iSortedSetC = iSortedSetA.sliceByValue([1, 1, 2], [1, 9, 9]);
+
+  expect(iSortedSetC.sameAs(iSortedSetA)).toEqual(true);
+});
+
+test("range delete by index case 0", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 6, 9]);
+  iSortedSetA.push([1, 1, 2]);
+  iSortedSetA.push([1, 9, 9]);
+
+  const iSortedSetC = new IndexedSortedSet(leq, 3);
+
+  iSortedSetC.push([1, 6, 7]);
+  iSortedSetC.push([1, 3, 5]);
+  iSortedSetC.push([1, 6, 9]);
+  iSortedSetC.push([1, 1, 2]);
+  iSortedSetC.push([1, 9, 9]);
+
+  iSortedSetA.spliceByIndex(1, 3);
+
+  expect(iSortedSetC.sameAs(iSortedSetA)).toEqual(true);
+});
+
+test("range delete by index case 1", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 6, 9]);
+  iSortedSetA.push([1, 1, 2]);
+  iSortedSetA.push([1, 9, 9]);
+
+  const iSortedSetC = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.spliceByIndex(0, 7);
+
+  expect(iSortedSetC.sameAs(iSortedSetA)).toEqual(true);
+});
+
+test("range delete by value case 0", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 6, 9]);
+  iSortedSetA.push([1, 1, 2]);
+  iSortedSetA.push([1, 9, 9]);
+
+  const iSortedSetC = new IndexedSortedSet(leq, 3);
+
+  iSortedSetC.push([1, 6, 7]);
+  iSortedSetC.push([1, 3, 5]);
+  iSortedSetC.push([1, 6, 9]);
+  iSortedSetC.push([1, 1, 2]);
+  iSortedSetC.push([1, 9, 9]);
+
+  iSortedSetA.spliceByValue([1, 2, 2], [1, 2, 4]);
+
+  expect(iSortedSetC.sameAs(iSortedSetA)).toEqual(true);
+});
+
+test("range delete by value case 1", () => {
+  const iSortedSetA = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.push([1, 2, 3]);
+  iSortedSetA.push([1, 2, 2]);
+  iSortedSetA.push([1, 6, 7]);
+  iSortedSetA.push([1, 3, 5]);
+  iSortedSetA.push([1, 2, 4]);
+  iSortedSetA.push([1, 6, 9]);
+  iSortedSetA.push([1, 1, 2]);
+  iSortedSetA.push([1, 9, 9]);
+
+  const iSortedSetC = new IndexedSortedSet(leq, 3);
+
+  iSortedSetA.spliceByValue([1, 1, 2], [1, 9, 9]);
+
+  expect(iSortedSetC.sameAs(iSortedSetA)).toEqual(true);
 });
