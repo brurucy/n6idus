@@ -13,13 +13,7 @@ It is faster, or the same speed, as all these libraries:
 
 The main advantage over all of these, is that it supports indexing *by position* in amortized O(log(B)) time complexity, where B is constant, while all others are O(n).
 
-To implement:
-
-- nextHigherKey
-- nextLowerKey
-
 Release plan:
 
 1. 0.1.0 - The current indexed sorted set implementation
-2. 0.2.0 - A not-indexed sorted set implementation (halfway done)
-3. 0.3.0 - An indexed sorted set with hash
+2. 0.2.0 - A hash-map with an indexed sorted set as key

@@ -1,7 +1,7 @@
 import { SortedArraySet } from "./sorted_array.js";
 import { FenwickArray } from "./index.js";
 
-class IndexedSortedSet {
+class IndexedOrderedSet {
   buckets = [];
   index = new FenwickArray([0]);
   length = 0;
@@ -117,8 +117,8 @@ class IndexedSortedSet {
   }
   nextHigherKey(item) {
     const firstLevelIndex = this.#bucketIndexOf(item);
-    const secondLevelIndex = this.buckets[fromFirstLevelIndex].indexOf(item);
-    if (secondLevelIndex < this.buckets[firstLevelIndex].bucket.length - 2) {
+    const secondLevelIndex = this.buckets[firstLevelIndex].indexOf(item);
+    if (secondLevelIndex < this.buckets[firstLevelIndex].bucket.length - 1) {
       return this.buckets[firstLevelIndex].select(secondLevelIndex + 1);
     } else if (firstLevelIndex === this.buckets.length - 1) {
       return null;
@@ -133,16 +133,16 @@ class IndexedSortedSet {
       return this.buckets[firstLevelIndex].select(secondLevelIndex - 1);
     } else if (firstLevelIndex > 0) {
       return this.buckets[firstLevelIndex - 1].select(
-        this.buckets[firstLevelIndex - 1].bucket[
-          this.buckets[firstLevelIndex - 1].bucket.length
-        ]
+        this.buckets[firstLevelIndex - 1].bucket.length - 1
       );
+    } else {
+      return null;
     }
   }
   map(callbackFn, cmp, bucketSize) {
     const cmpFunc = cmp ?? this.cmp;
     const bS = bucketSize ?? this.bucketSize;
-    const out = new IndexedSortedSet(cmpFunc, bS);
+    const out = new IndexedOrderedSet(cmpFunc, bS);
     let length = 0;
     for (let i = 0; i < this.buckets.length; i++) {
       for (let j = 0; j < this.buckets[i].bucket.length; j++) {
@@ -155,7 +155,7 @@ class IndexedSortedSet {
   filter(callbackFn, cmp, bucketSize) {
     const cmpFunc = cmp ?? this.cmp;
     const bS = bucketSize ?? this.bucketSize;
-    const out = new IndexedSortedSet(cmpFunc, bS);
+    const out = new IndexedOrderedSet(cmpFunc, bS);
     let length = 0;
     for (let i = 0; i < this.buckets.length; i++) {
       for (let j = 0; j < this.buckets[i].bucket.length; j++) {
@@ -385,7 +385,10 @@ class IndexedSortedSet {
       }
       bucketArray.push(lastSlice);
     }
-    const newIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+    const newIndexedSortedSet = new IndexedOrderedSet(
+      this.cmp,
+      this.bucketSize
+    );
     newIndexedSortedSet.fromPreBucketedArray(bucketArray);
 
     return newIndexedSortedSet;
@@ -424,7 +427,10 @@ class IndexedSortedSet {
       }
       bucketArray.push(lastSlice);
     }
-    const newIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+    const newIndexedSortedSet = new IndexedOrderedSet(
+      this.cmp,
+      this.bucketSize
+    );
     newIndexedSortedSet.fromPreBucketedArray(bucketArray);
 
     return newIndexedSortedSet;
@@ -610,7 +616,10 @@ class IndexedSortedSet {
       rightLength = otherIndexedSortedSet.length;
 
     const product = [[]],
-      productIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+      productIndexedSortedSet = new IndexedOrderedSet(
+        this.cmp,
+        this.bucketSize
+      );
 
     while (leftIterator + rightIterator < rightLength + leftLength) {
       if (
@@ -690,7 +699,10 @@ class IndexedSortedSet {
       rightLength = otherIndexedSortedSet.length;
 
     const product = [[]],
-      productIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+      productIndexedSortedSet = new IndexedOrderedSet(
+        this.cmp,
+        this.bucketSize
+      );
 
     while (leftIterator < leftLength && rightIterator < rightLength) {
       if (
@@ -756,7 +768,10 @@ class IndexedSortedSet {
       rightLength = otherIndexedSortedSet.length;
 
     const product = [[]],
-      productIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+      productIndexedSortedSet = new IndexedOrderedSet(
+        this.cmp,
+        this.bucketSize
+      );
 
     while (leftIterator + rightIterator < rightLength + leftLength) {
       if (
@@ -831,7 +846,10 @@ class IndexedSortedSet {
       rightLength = otherIndexedSortedSet.length;
 
     const product = [[]],
-      productIndexedSortedSet = new IndexedSortedSet(this.cmp, this.bucketSize);
+      productIndexedSortedSet = new IndexedOrderedSet(
+        this.cmp,
+        this.bucketSize
+      );
 
     while (leftIterator + rightIterator < rightLength + leftLength) {
       if (
@@ -1232,4 +1250,4 @@ class IndexedSortedSet {
     );
   }
 }
-export { IndexedSortedSet };
+export { IndexedOrderedSet };

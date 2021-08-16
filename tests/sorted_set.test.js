@@ -1,4 +1,4 @@
-import { IndexedSortedSet } from "../src/mod";
+import { IndexedOrderedSet } from "../src/witchcraft";
 
 const leq = (a, b) => {
   let isItLeq = true;
@@ -23,7 +23,7 @@ const shuffle = (arr) => {
 };
 
 test("push to sorted set, simple", () => {
-  let ISortedSet = new IndexedSortedSet(leq, 3);
+  let ISortedSet = new IndexedOrderedSet(leq, 3);
 
   ISortedSet.push([1, 2, 3]);
   ISortedSet.push([1, 2, 2]);
@@ -33,7 +33,7 @@ test("push to sorted set, simple", () => {
 });
 
 test("push to sorted set, with balance", () => {
-  let ISortedSet = new IndexedSortedSet(leq, 3);
+  let ISortedSet = new IndexedOrderedSet(leq, 3);
 
   ISortedSet.push([1, 2, 3]);
   ISortedSet.push([1, 2, 2]);
@@ -51,10 +51,10 @@ test("push to sorted set, with balance", () => {
 });
 
 test("push to sorted set, order and length assurance", () => {
-  const ISortedSet = new IndexedSortedSet((x, y) => {
+  const ISortedSet = new IndexedOrderedSet((x, y) => {
     return x <= y;
   }, 10);
-  let dataArr = new Array(1000);
+  let dataArr = new Array(100000);
   for (let i = 0; i < dataArr.length; i++) {
     dataArr[i] = i;
   }
@@ -64,7 +64,7 @@ test("push to sorted set, order and length assurance", () => {
     ISortedSet.push(item);
   }
 
-  expect(ISortedSet.length).toEqual(1000);
+  expect(ISortedSet.length).toEqual(100000);
 
   let curr;
   let last;
@@ -79,7 +79,7 @@ test("push to sorted set, order and length assurance", () => {
 });
 
 test("getting the i-th element", () => {
-  let ISortedSet = new IndexedSortedSet(leq, 3);
+  let ISortedSet = new IndexedOrderedSet(leq, 3);
 
   ISortedSet.push([1, 2, 3]);
   ISortedSet.push([1, 2, 2]);
@@ -97,7 +97,7 @@ test("getting the i-th element", () => {
 });
 
 test("has", () => {
-  let ISortedSet = new IndexedSortedSet(leq, 3);
+  let ISortedSet = new IndexedOrderedSet(leq, 3);
 
   ISortedSet.push([1, 2, 3]);
   ISortedSet.push([1, 2, 2]);
@@ -119,7 +119,7 @@ test("has", () => {
 });
 
 test("Delete from sorted set", () => {
-  let ISortedSet = new IndexedSortedSet(leq, 3);
+  let ISortedSet = new IndexedOrderedSet(leq, 3);
 
   ISortedSet.push([1, 2, 3]);
   ISortedSet.push([1, 2, 2]);
@@ -157,7 +157,7 @@ test("Delete from sorted set", () => {
 });
 
 test("Get nth from sorted set", () => {
-  let ISortedSet = new IndexedSortedSet(leq, 3);
+  let ISortedSet = new IndexedOrderedSet(leq, 3);
 
   ISortedSet.push([1, 2, 3]);
   ISortedSet.push([1, 2, 2]);
@@ -175,7 +175,7 @@ test("Get nth from sorted set", () => {
 });
 
 test("Delete nth from sorted set", () => {
-  let ISortedSet = new IndexedSortedSet(leq, 3);
+  let ISortedSet = new IndexedOrderedSet(leq, 3);
 
   ISortedSet.push([1, 2, 3]);
   ISortedSet.push([1, 2, 2]);
@@ -200,7 +200,7 @@ test("Delete nth from sorted set", () => {
 });
 
 test("SameAs", () => {
-  let iSortedSetA = new IndexedSortedSet(leq, 3);
+  let iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -209,7 +209,7 @@ test("SameAs", () => {
   iSortedSetA.push([1, 2, 4]);
   iSortedSetA.push([1, 9, 9]);
 
-  let iSortedSetB = new IndexedSortedSet(leq, 3);
+  let iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetB.push([1, 2, 3]);
   iSortedSetB.push([1, 2, 2]);
@@ -226,8 +226,8 @@ test("SameAs", () => {
 });
 
 test("Union", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -245,8 +245,8 @@ test("Union", () => {
 });
 
 test("Intersection", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -272,8 +272,8 @@ test("Intersection", () => {
 });
 
 test("Difference", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -296,8 +296,8 @@ test("Difference", () => {
 });
 
 test("Symmetric Difference", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -320,8 +320,8 @@ test("Symmetric Difference", () => {
 });
 
 test("isSupersetOf", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -340,8 +340,8 @@ test("isSupersetOf", () => {
 });
 
 test("isProperSupersetOf", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -359,8 +359,8 @@ test("isProperSupersetOf", () => {
 });
 
 test("isSubsetOf", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -379,8 +379,8 @@ test("isSubsetOf", () => {
 });
 
 test("isProperSupersetOf", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -398,8 +398,8 @@ test("isProperSupersetOf", () => {
 });
 
 test("isDisjointWith", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -417,7 +417,7 @@ test("isDisjointWith", () => {
 });
 
 test("forward iterator", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -434,7 +434,7 @@ test("forward iterator", () => {
 });
 
 test("backwards iterator", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -450,7 +450,7 @@ test("backwards iterator", () => {
 });
 
 test("forward range iterator by index", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -466,7 +466,7 @@ test("forward range iterator by index", () => {
   expect(length).toEqual(4);
 });
 test("forward range iterator by value", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -485,7 +485,7 @@ test("forward range iterator by value", () => {
   expect(length).toEqual(3);
 });
 test("backwards range iterator by index", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -501,7 +501,7 @@ test("backwards range iterator by index", () => {
   expect(length).toEqual(4);
 });
 test("backwards range iterator by value", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -521,7 +521,7 @@ test("backwards range iterator by value", () => {
 });
 
 test("slice by index", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -529,7 +529,7 @@ test("slice by index", () => {
   iSortedSetA.push([1, 3, 5]);
   iSortedSetA.push([1, 2, 4]);
 
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
   iSortedSetB.push([1, 6, 7]);
   iSortedSetB.push([1, 3, 5]);
   iSortedSetB.push([1, 2, 4]);
@@ -541,7 +541,7 @@ test("slice by index", () => {
 });
 
 test("slice by value case 0", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -549,7 +549,7 @@ test("slice by value case 0", () => {
   iSortedSetA.push([1, 3, 5]);
   iSortedSetA.push([1, 2, 4]);
 
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
   iSortedSetB.push([1, 2, 4]);
   iSortedSetB.push([1, 2, 3]);
 
@@ -559,7 +559,7 @@ test("slice by value case 0", () => {
 });
 
 test("slice by value case 1", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -567,7 +567,7 @@ test("slice by value case 1", () => {
   iSortedSetA.push([1, 3, 5]);
   iSortedSetA.push([1, 2, 4]);
 
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
   iSortedSetB.push([1, 6, 7]);
   iSortedSetB.push([1, 3, 5]);
   iSortedSetB.push([1, 2, 4]);
@@ -579,7 +579,7 @@ test("slice by value case 1", () => {
 });
 
 test("slice by value case 2", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -596,7 +596,7 @@ test("slice by value case 2", () => {
 });
 
 test("range delete by index case 0", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -607,7 +607,7 @@ test("range delete by index case 0", () => {
   iSortedSetA.push([1, 1, 2]);
   iSortedSetA.push([1, 9, 9]);
 
-  const iSortedSetC = new IndexedSortedSet(leq, 3);
+  const iSortedSetC = new IndexedOrderedSet(leq, 3);
 
   iSortedSetC.push([1, 6, 7]);
   iSortedSetC.push([1, 3, 5]);
@@ -621,7 +621,7 @@ test("range delete by index case 0", () => {
 });
 
 test("range delete by index case 1", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -632,7 +632,7 @@ test("range delete by index case 1", () => {
   iSortedSetA.push([1, 1, 2]);
   iSortedSetA.push([1, 9, 9]);
 
-  const iSortedSetC = new IndexedSortedSet(leq, 3);
+  const iSortedSetC = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.spliceByIndex(0, 7);
 
@@ -640,7 +640,7 @@ test("range delete by index case 1", () => {
 });
 
 test("range delete by value case 0", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -651,7 +651,7 @@ test("range delete by value case 0", () => {
   iSortedSetA.push([1, 1, 2]);
   iSortedSetA.push([1, 9, 9]);
 
-  const iSortedSetC = new IndexedSortedSet(leq, 3);
+  const iSortedSetC = new IndexedOrderedSet(leq, 3);
 
   iSortedSetC.push([1, 6, 7]);
   iSortedSetC.push([1, 3, 5]);
@@ -665,7 +665,7 @@ test("range delete by value case 0", () => {
 });
 
 test("range delete by value case 1", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 2, 2]);
@@ -676,7 +676,7 @@ test("range delete by value case 1", () => {
   iSortedSetA.push([1, 1, 2]);
   iSortedSetA.push([1, 9, 9]);
 
-  const iSortedSetC = new IndexedSortedSet(leq, 3);
+  const iSortedSetC = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.spliceByValue([1, 1, 2], [1, 9, 9]);
 
@@ -684,7 +684,7 @@ test("range delete by value case 1", () => {
 });
 
 test("map and mapToArray", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 2]);
   iSortedSetA.push([1, 2, 3]);
@@ -694,7 +694,7 @@ test("map and mapToArray", () => {
   const iSortedSetB = iSortedSetA.map(([_, [s, p, o]]) => [p, s, o]);
   const sortedArray = iSortedSetA.mapToArray(([_, [s, p, o]]) => [p, s, o]);
 
-  const iSortedSetC = new IndexedSortedSet(leq, 3);
+  const iSortedSetC = new IndexedOrderedSet(leq, 3);
 
   iSortedSetC.push([2, 1, 2]);
   iSortedSetC.push([2, 1, 3]);
@@ -714,7 +714,7 @@ test("map and mapToArray", () => {
 });
 
 test("reduce and reduceRight", () => {
-  const iSortedSetA = new IndexedSortedSet((x, y) => {
+  const iSortedSetA = new IndexedOrderedSet((x, y) => {
     return x <= y;
   }, 3);
 
@@ -734,14 +734,14 @@ test("reduce and reduceRight", () => {
 });
 
 test("filter, every and some", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 2]);
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 3, 5]);
   iSortedSetA.push([1, 6, 7]);
 
-  const iSortedSetB = new IndexedSortedSet(leq, 3);
+  const iSortedSetB = new IndexedOrderedSet(leq, 3);
 
   iSortedSetB.push([1, 2, 2]);
   iSortedSetB.push([1, 2, 3]);
@@ -775,7 +775,7 @@ test("filter, every and some", () => {
 });
 
 test("Get min, and shift", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 2]);
   iSortedSetA.push([1, 2, 3]);
@@ -795,7 +795,7 @@ test("Get min, and shift", () => {
 });
 
 test("Get min, and shift", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 2]);
   iSortedSetA.push([1, 2, 3]);
@@ -812,11 +812,11 @@ test("Get min, and shift", () => {
   expect(iSortedSetA.has([1, 3, 5])).toEqual(false);
   iSortedSetA.shift();
   expect(iSortedSetA.has([1, 6, 7])).toEqual(false);
-  expect(iSortedSetA.sameAs(new IndexedSortedSet(leq, 3))).toEqual(true);
+  expect(iSortedSetA.sameAs(new IndexedOrderedSet(leq, 3))).toEqual(true);
 });
 
 test("Get max, and pop", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 2]);
   iSortedSetA.push([1, 2, 3]);
@@ -833,32 +833,25 @@ test("Get max, and pop", () => {
   expect(iSortedSetA.has([1, 2, 3])).toEqual(false);
   iSortedSetA.pop();
   expect(iSortedSetA.has([1, 2, 2])).toEqual(false);
-  expect(iSortedSetA.sameAs(new IndexedSortedSet(leq, 3))).toEqual(true);
+  expect(iSortedSetA.sameAs(new IndexedOrderedSet(leq, 3))).toEqual(true);
 });
 
 test("Next higher key", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 2]);
   iSortedSetA.push([1, 2, 3]);
   iSortedSetA.push([1, 3, 5]);
   iSortedSetA.push([1, 6, 7]);
 
-  expect(iSortedSetA.getMax()).toEqual([1, 6, 7]);
-
-  iSortedSetA.pop();
-  expect(iSortedSetA.has([1, 6, 7])).toEqual(false);
-  iSortedSetA.pop();
-  expect(iSortedSetA.has([1, 3, 5])).toEqual(false);
-  iSortedSetA.pop();
-  expect(iSortedSetA.has([1, 2, 3])).toEqual(false);
-  iSortedSetA.pop();
-  expect(iSortedSetA.has([1, 2, 2])).toEqual(false);
-  expect(iSortedSetA.sameAs(new IndexedSortedSet(leq, 3))).toEqual(true);
+  expect(iSortedSetA.nextHigherKey([1, 6, 7])).toEqual(null);
+  expect(iSortedSetA.nextHigherKey([1, 3, 5])).toEqual([1, 6, 7]);
+  expect(iSortedSetA.nextHigherKey([1, 2, 3])).toEqual([1, 3, 5]);
+  expect(iSortedSetA.nextHigherKey([1, 2, 2])).toEqual([1, 2, 3]);
 });
 
 test("Next lower key", () => {
-  const iSortedSetA = new IndexedSortedSet(leq, 3);
+  const iSortedSetA = new IndexedOrderedSet(leq, 3);
 
   iSortedSetA.push([1, 2, 2]);
   iSortedSetA.push([1, 2, 3]);

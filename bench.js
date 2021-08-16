@@ -1,10 +1,12 @@
-import { IndexedSortedSet, SortedSet } from './src/mod.js';
-import CollectionsSortedSet from 'collections/sorted-set.js';
-import FunctionalRedBlackTree from 'functional-red-black-tree';
-import BTree from 'sorted-btree';
+import { IndexedOrderedSet } from "./src/witchcraft.js";
+import CollectionsSortedSet from "collections/sorted-set.js";
+import FunctionalRedBlackTree from "functional-red-black-tree";
+import BTree from "sorted-btree";
 const BTreeSet = BTree.default;
-import Microtime from 'microtime';
-import { RBTree } from 'bintrees';
+import Microtime from "microtime";
+import { RBTree } from "bintrees";
+import stringify from "csv-stringify/lib/sync.js";
+import * as fs from "fs";
 
 const shuffle = (arr) => {
   const newArr = arr.slice();
@@ -37,12 +39,17 @@ const intCmp = (x, y) => {
 
 const refresh = () => {
   return [
-    { name: 'IndexedSSet', structure: new IndexedSortedSet(intLeq, 500) },
-    { name: 'SSet', structure: new SortedSet(intLeq, 500) },
-    { name: 'Collections SSet', structure: new CollectionsSortedSet(undefined, undefined, intCmp) },
-    { name: 'Fastest BTree', structure: new BTreeSet(undefined, intCmp) },
-    { name: 'Functional Tree', structure: FunctionalRedBlackTree() },
-    { name: 'RBTree', structure: new RBTree(intCmp) },
+    {
+      name: "Flat Bucketed Array",
+      structure: new IndexedOrderedSet(intLeq, 500),
+    },
+    {
+      name: "SplayTree",
+      structure: new CollectionsSortedSet(undefined, undefined, intCmp),
+    },
+    { name: "Fastest BTree", structure: new BTreeSet(undefined, intCmp) },
+    { name: "Functional RBTree", structure: FunctionalRedBlackTree() },
+    { name: "RBTree", structure: new RBTree(intCmp) },
   ];
 };
 
@@ -53,15 +60,15 @@ for (let k = 0; k < testArrays.length; k++) {
 
   const addingRandom = structures.map((a) => {
     const now = Microtime.now();
-    if (a.name.localeCompare('Functional Tree') === 0) {
+    if (a.name.localeCompare("Functional RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure = a.structure.insert(testArrays[k][i], testArrays[k][i]);
       }
-    } else if (a.name.localeCompare('RBTree') === 0) {
+    } else if (a.name.localeCompare("RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.insert(testArrays[k][i]);
       }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    } else if (a.name.localeCompare("Fastest BTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.add(testArrays[k][i], undefined);
       }
@@ -72,8 +79,8 @@ for (let k = 0; k < testArrays.length; k++) {
     }
     return {
       n: sizes[k],
-      ordering: 'random',
-      operation: 'add',
+      ordering: "random",
+      operation: "add",
       name: a.name,
       duration: (Microtime.now() - now) / 1000,
     };
@@ -81,15 +88,15 @@ for (let k = 0; k < testArrays.length; k++) {
 
   const gettingRandom = structures.map((a) => {
     let now = Microtime.now();
-    if (a.name.localeCompare('Functional Tree') === 0) {
+    if (a.name.localeCompare("Functional RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.get(testArrays[k][i]);
       }
-    } else if (a.name.localeCompare('RBTree') === 0) {
+    } else if (a.name.localeCompare("RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.find(testArrays[k][i]);
       }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    } else if (a.name.localeCompare("Fastest BTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.get(testArrays[k][i], undefined);
       }
@@ -100,15 +107,15 @@ for (let k = 0; k < testArrays.length; k++) {
     }
     return {
       n: sizes[k],
-      ordering: 'random',
-      operation: 'get',
+      ordering: "random",
+      operation: "get",
       name: a.name,
       duration: (Microtime.now() - now) / 1000,
     };
   });
 
   const gettingByIndexRandom = structures
-    .filter((a) => a.name === 'IndexedSSet')
+    .filter((a) => a.name === "Flat Bucketed Array")
     .map((a) => {
       let now = Microtime.now();
       for (let i = 0; i < testArrays[k].length; i++) {
@@ -116,8 +123,8 @@ for (let k = 0; k < testArrays.length; k++) {
       }
       return {
         n: sizes[k],
-        ordering: 'random',
-        operation: 'select',
+        ordering: "random",
+        operation: "select",
         name: a.name,
         duration: (Microtime.now() - now) / 1000,
       };
@@ -125,15 +132,15 @@ for (let k = 0; k < testArrays.length; k++) {
 
   const deletingRandom = structures.map((a) => {
     let now = Microtime.now();
-    if (a.name.localeCompare('Functional Tree') === 0) {
+    if (a.name.localeCompare("Functional RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure = a.structure.remove(testArrays[k][i]);
       }
-    } else if (a.name.localeCompare('RBTree') === 0) {
+    } else if (a.name.localeCompare("RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.remove(testArrays[k][i]);
       }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    } else if (a.name.localeCompare("Fastest BTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.delete(testArrays[k][i], undefined);
       }
@@ -144,8 +151,8 @@ for (let k = 0; k < testArrays.length; k++) {
     }
     return {
       n: sizes[k],
-      ordering: 'random',
-      operation: 'delete',
+      ordering: "random",
+      operation: "delete",
       name: a.name,
       duration: (Microtime.now() - now) / 1000,
     };
@@ -153,15 +160,15 @@ for (let k = 0; k < testArrays.length; k++) {
 
   const addingSequential = structures.map((a) => {
     let now = Microtime.now();
-    if (a.name.localeCompare('Functional Tree') === 0) {
+    if (a.name.localeCompare("Functional RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure = a.structure.insert(i, i);
       }
-    } else if (a.name.localeCompare('RBTree') === 0) {
+    } else if (a.name.localeCompare("RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.insert(i);
       }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    } else if (a.name.localeCompare("Fastest BTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.add(i, undefined);
       }
@@ -172,8 +179,8 @@ for (let k = 0; k < testArrays.length; k++) {
     }
     return {
       n: sizes[k],
-      ordering: 'random',
-      operation: 'add',
+      ordering: "random",
+      operation: "add",
       name: a.name,
       duration: (Microtime.now() - now) / 1000,
     };
@@ -181,15 +188,15 @@ for (let k = 0; k < testArrays.length; k++) {
 
   const gettingSequential = structures.map((a) => {
     let now = Microtime.now();
-    if (a.name.localeCompare('Functional Tree') === 0) {
+    if (a.name.localeCompare("Functional RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.get(i);
       }
-    } else if (a.name.localeCompare('RBTree') === 0) {
+    } else if (a.name.localeCompare("RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.find(i);
       }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    } else if (a.name.localeCompare("Fastest BTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.get(i, undefined);
       }
@@ -200,15 +207,15 @@ for (let k = 0; k < testArrays.length; k++) {
     }
     return {
       n: sizes[k],
-      ordering: 'sequential',
-      operation: 'get',
+      ordering: "sequential",
+      operation: "get",
       name: a.name,
       duration: (Microtime.now() - now) / 1000,
     };
   });
 
   const gettingByIndexSequential = structures
-    .filter((a) => a.name === 'IndexedSSet')
+    .filter((a) => a.name === "Flat Bucketed Array")
     .map((a) => {
       let now = Microtime.now();
       for (let i = 0; i < testArrays[k].length; i++) {
@@ -216,8 +223,8 @@ for (let k = 0; k < testArrays.length; k++) {
       }
       return {
         n: sizes[k],
-        ordering: 'sequential',
-        operation: 'select',
+        ordering: "sequential",
+        operation: "select",
         name: a.name,
         duration: (Microtime.now() - now) / 1000,
       };
@@ -225,15 +232,15 @@ for (let k = 0; k < testArrays.length; k++) {
 
   const deletingSequential = structures.map((a) => {
     let now = Microtime.now();
-    if (a.name.localeCompare('Functional Tree') === 0) {
+    if (a.name.localeCompare("Functional RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure = a.structure.remove(i);
       }
-    } else if (a.name.localeCompare('RBTree') === 0) {
+    } else if (a.name.localeCompare("RBTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.remove(i);
       }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
+    } else if (a.name.localeCompare("Fastest BTree") === 0) {
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.delete(i, undefined);
       }
@@ -244,8 +251,8 @@ for (let k = 0; k < testArrays.length; k++) {
     }
     return {
       n: sizes[k],
-      ordering: 'sequential',
-      operation: 'deletion',
+      ordering: "sequential",
+      operation: "deletion",
       name: a.name,
       duration: (Microtime.now() - now) / 1000,
     };
@@ -263,6 +270,11 @@ for (let k = 0; k < testArrays.length; k++) {
   ];
 }
 
-for (const bench of benches.flat()) {
+const flattenedBenches = benches.flat(2);
+for (const bench of flattenedBenches) {
   console.log(bench);
 }
+const outputCsv = stringify(flattenedBenches, {
+  header: true,
+});
+fs.writeFileSync(`./${Microtime.now()}.csv`, outputCsv);
