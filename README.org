@@ -15,15 +15,8 @@ The main advantage over all of these, is that it supports indexing *by position*
 
 To implement:
 
-- getMin
-- getMax
-- popMin
-- popMax
 - nextHigherKey
 - nextLowerKey
-- filter
-- every
-- some
 
 Release plan:
 

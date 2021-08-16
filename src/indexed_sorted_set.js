@@ -77,6 +77,68 @@ class IndexedSortedSet {
       }
     }
   }
+  getMin() {
+    return this.buckets[0].bucket[0];
+  }
+  getMax() {
+    return this.buckets[this.buckets.length - 1].bucket[
+      this.buckets[this.buckets.length - 1].bucket.length - 1
+    ];
+  }
+  shift() {
+    const out = this.buckets[0].bucket.shift();
+    this.index.decreaseLength(0);
+    this.buckets[0].max =
+      this.buckets[0].bucket[this.buckets[0].bucket.length - 1];
+    if (this.buckets[0].bucket.length === 0) {
+      if (this.length !== 1) {
+        this.buckets.shift();
+        this.#buildIndex();
+      }
+    }
+    this.length = this.length - 1;
+    return out;
+  }
+  pop() {
+    const out = this.buckets[this.buckets.length - 1].bucket.pop();
+    this.index.decreaseLength(this.buckets.length - 1);
+    this.buckets[this.buckets.length - 1].max =
+      this.buckets[this.buckets.length - 1].bucket[
+        this.buckets[this.buckets.length - 1].bucket.length - 1
+      ];
+    if (this.buckets[this.buckets.length - 1].bucket.length === 0) {
+      if (this.length !== 1) {
+        this.buckets.pop();
+        this.#buildIndex();
+      }
+    }
+    this.length = this.length - 1;
+    return out;
+  }
+  nextHigherKey(item) {
+    const firstLevelIndex = this.#bucketIndexOf(item);
+    const secondLevelIndex = this.buckets[fromFirstLevelIndex].indexOf(item);
+    if (secondLevelIndex < this.buckets[firstLevelIndex].bucket.length - 2) {
+      return this.buckets[firstLevelIndex].select(secondLevelIndex + 1);
+    } else if (firstLevelIndex === this.buckets.length - 1) {
+      return null;
+    } else {
+      return this.buckets[firstLevelIndex + 1].select(0);
+    }
+  }
+  nextLowerKey(item) {
+    const firstLevelIndex = this.#bucketIndexOf(item);
+    const secondLevelIndex = this.buckets[firstLevelIndex].indexOf(item);
+    if (secondLevelIndex > 0) {
+      return this.buckets[firstLevelIndex].select(secondLevelIndex - 1);
+    } else if (firstLevelIndex > 0) {
+      return this.buckets[firstLevelIndex - 1].select(
+        this.buckets[firstLevelIndex - 1].bucket[
+          this.buckets[firstLevelIndex - 1].bucket.length
+        ]
+      );
+    }
+  }
   map(callbackFn, cmp, bucketSize) {
     const cmpFunc = cmp ?? this.cmp;
     const bS = bucketSize ?? this.bucketSize;
@@ -84,18 +146,74 @@ class IndexedSortedSet {
     let length = 0;
     for (let i = 0; i < this.buckets.length; i++) {
       for (let j = 0; j < this.buckets[i].bucket.length; j++) {
-        out.push(callbackFn([length, this.buckets[i].bucket.select(j)]));
+        out.push(callbackFn([length, this.buckets[i].select(j)]));
         length += 1;
       }
     }
     return out;
+  }
+  filter(callbackFn, cmp, bucketSize) {
+    const cmpFunc = cmp ?? this.cmp;
+    const bS = bucketSize ?? this.bucketSize;
+    const out = new IndexedSortedSet(cmpFunc, bS);
+    let length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        const item = [length, this.buckets[i].select(j)];
+        if (callbackFn(item)) {
+          out.push(this.buckets[i].select(j));
+        }
+        length += 1;
+      }
+    }
+    return out;
+  }
+  filterToArray(callbackFn) {
+    const out = [];
+    let length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        const item = [length, this.buckets[i].select(j)];
+        if (callbackFn(item)) {
+          out.push(this.buckets[i].select(j));
+        }
+        length += 1;
+      }
+    }
+    return out;
+  }
+  every(callbackFn) {
+    let length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        const item = [length, this.buckets[i].select(j)];
+        if (!callbackFn(item)) {
+          return false;
+        }
+        length += 1;
+      }
+    }
+    return true;
+  }
+  some(callbackFn) {
+    let length = 0;
+    for (let i = 0; i < this.buckets.length; i++) {
+      for (let j = 0; j < this.buckets[i].bucket.length; j++) {
+        const item = [length, this.buckets[i].select(j)];
+        if (callbackFn(item)) {
+          return true;
+        }
+        length += 1;
+      }
+    }
+    return false;
   }
   mapToArray(callbackFn) {
     const out = [];
     let length = 0;
     for (let i = 0; i < this.buckets.length; i++) {
       for (let j = 0; j < this.buckets[i].bucket.length; j++) {
-        out.push(callbackFn([length, this.buckets[i].bucket.select(j)]));
+        out.push(callbackFn([length, this.buckets[i].select(j)]));
         length += 1;
       }
     }
@@ -106,7 +224,7 @@ class IndexedSortedSet {
     let length = 0;
     for (let i = 0; i < this.buckets.length; i++) {
       for (let j = 0; j < this.buckets[i].bucket.length; j++) {
-        value = callbackFn([length, this.buckets[i].bucket.select(j)], value);
+        value = callbackFn(value, [length, this.buckets[i].select(j)]);
         length += 1;
       }
     }
@@ -117,7 +235,7 @@ class IndexedSortedSet {
     let length = 0;
     for (let i = this.buckets.length - 1; i >= 0; i--) {
       for (let j = this.buckets[i].bucket.length - 1; j >= 0; j--) {
-        value = callbackFn([length, this.buckets[i].bucket.select(j)], value);
+        value = callbackFn(value, [length, this.buckets[i].select(j)]);
         length += 1;
       }
     }
@@ -985,7 +1103,7 @@ class IndexedSortedSet {
 
     if (
       matches === this.length &&
-      this.length != otherIndexedSortedSet.length
+      this.length !== otherIndexedSortedSet.length
     ) {
       return true;
     } else {
@@ -1108,14 +1226,10 @@ class IndexedSortedSet {
       }
     }
 
-    if (
+    return (
       matches === otherIndexedSortedSet.length &&
       this.length !== otherIndexedSortedSet.length
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    );
   }
 }
 export { IndexedSortedSet };
