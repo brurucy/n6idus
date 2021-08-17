@@ -16,20 +16,29 @@ class IndexedOrderedSet {
   }
   #balance(firstLevelIndex) {
     const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
-    const newBucketContents = this.buckets[firstLevelIndex].bucket.slice(-half);
+    const newBucketContents = this.buckets[firstLevelIndex].bucket.slice(
+      half,
+      this.buckets[firstLevelIndex].bucket.length
+    );
     const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(
       0,
       half
     );
+
     const newArraySet = new SortedArraySet(this.cmp);
     this.buckets[firstLevelIndex] = new SortedArraySet(this.cmp);
+
     newArraySet.bucket = newBucketContents;
+
     this.buckets[firstLevelIndex].bucket = oldBucketContents;
+
     newArraySet.max = newArraySet.bucket[newArraySet.bucket.length - 1];
+
     this.buckets[firstLevelIndex].max =
       this.buckets[firstLevelIndex].bucket[
         this.buckets[firstLevelIndex].bucket.length - 1
       ];
+
     this.buckets.splice(firstLevelIndex + 1, 0, newArraySet);
     this.#buildIndex();
   }

@@ -17,3 +17,4 @@ Release plan:
 
 1. 0.1.0 - The current indexed sorted set implementation
 2. 0.2.0 - A hash-map with an indexed sorted set as key
+3. 0.3.0 - A persistent indexed sorted set
