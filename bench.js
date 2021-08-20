@@ -1,12 +1,12 @@
-import { IndexedOrderedSet } from './src/witchcraft.js';
-import CollectionsSortedSet from 'collections/sorted-set.js';
-import FunctionalRedBlackTree from 'functional-red-black-tree';
-import BTree from 'sorted-btree';
+import { IndexedOrderedSet } from "./src/n6idus.js";
+import CollectionsSortedSet from "collections/sorted-set.js";
+import FunctionalRedBlackTree from "functional-red-black-tree";
+import BTree from "sorted-btree";
 const BTreeSet = BTree.default;
-import Microtime from 'microtime';
-import { RBTree } from 'bintrees';
-import stringify from 'csv-stringify/lib/sync.js';
-import * as fs from 'fs';
+import Microtime from "microtime";
+import { RBTree } from "bintrees";
+import stringify from "csv-stringify/lib/sync.js";
+import * as fs from "fs";
 
 const shuffle = (arr) => {
   const newArr = arr.slice();
@@ -40,243 +40,172 @@ const intCmp = (x, y) => {
 const refresh = () => {
   return [
     {
-      name: 'Flat Bucketed Array',
-      structure: new IndexedOrderedSet(intLeq, 500),
+      name: "Flat Bucketed Array 100",
+      structure: new IndexedOrderedSet(intLeq, 100),
     },
     {
-      name: 'SplayTree',
-      structure: new CollectionsSortedSet(undefined, undefined, intCmp),
+      name: "Flat Bucketed Array 1000",
+      structure: new IndexedOrderedSet(intLeq, 1000),
     },
-    { name: 'Fastest BTree', structure: new BTreeSet(undefined, intCmp) },
-    { name: 'Functional RBTree', structure: FunctionalRedBlackTree() },
-    { name: 'RBTree', structure: new RBTree(intCmp) },
+    {
+      name: "Flat Bucketed Array 10000",
+      structure: new IndexedOrderedSet(intLeq, 10000),
+    },
   ];
 };
 
 const benches = new Array(sizes.length);
 
-for (let k = 0; k < testArrays.length; k++) {
-  let structures = refresh();
+let counter = 1000;
+while (counter > 0) {
+  for (let k = 0; k < testArrays.length; k++) {
+    let structures = refresh();
 
-  const addingRandom = structures.map((a) => {
-    const now = Microtime.now();
-    if (a.name.localeCompare('Functional RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure = a.structure.insert(testArrays[k][i], testArrays[k][i]);
-      }
-    } else if (a.name.localeCompare('RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.insert(testArrays[k][i]);
-      }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.add(testArrays[k][i], undefined);
-      }
-    } else {
+    const addingRandom = structures.map((a) => {
+      const now = Microtime.now();
+
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.push(testArrays[k][i]);
       }
-    }
-    return {
-      n: sizes[k],
-      ordering: 'random',
-      operation: 'add',
-      name: a.name,
-      duration: (Microtime.now() - now) / 1000,
-    };
-  });
 
-  const gettingRandom = structures.map((a) => {
-    let now = Microtime.now();
-    if (a.name.localeCompare('Functional RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.get(testArrays[k][i]);
-      }
-    } else if (a.name.localeCompare('RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.find(testArrays[k][i]);
-      }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.get(testArrays[k][i], undefined);
-      }
-    } else {
+      return {
+        n: sizes[k],
+        ordering: "random",
+        operation: "add",
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
+    });
+
+    const gettingRandom = structures.map((a) => {
+      let now = Microtime.now();
+
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.has(testArrays[k][i]);
       }
-    }
-    return {
-      n: sizes[k],
-      ordering: 'random',
-      operation: 'get',
-      name: a.name,
-      duration: (Microtime.now() - now) / 1000,
-    };
-  });
 
-  const gettingByIndexRandom = structures
-    .filter((a) => a.name === 'Flat Bucketed Array')
-    .map((a) => {
+      return {
+        n: sizes[k],
+        ordering: "random",
+        operation: "get",
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
+    });
+
+    const gettingByIndexRandom = structures.map((a) => {
       let now = Microtime.now();
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.select(i);
       }
       return {
         n: sizes[k],
-        ordering: 'random',
-        operation: 'select',
+        ordering: "random",
+        operation: "select",
         name: a.name,
         duration: (Microtime.now() - now) / 1000,
       };
     });
 
-  const deletingRandom = structures.map((a) => {
-    let now = Microtime.now();
-    if (a.name.localeCompare('Functional RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure = a.structure.remove(testArrays[k][i]);
-      }
-    } else if (a.name.localeCompare('RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.remove(testArrays[k][i]);
-      }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.delete(testArrays[k][i], undefined);
-      }
-    } else {
+    const deletingRandom = structures.map((a) => {
+      let now = Microtime.now();
+
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.delete(testArrays[k][i]);
       }
-    }
-    return {
-      n: sizes[k],
-      ordering: 'random',
-      operation: 'delete',
-      name: a.name,
-      duration: (Microtime.now() - now) / 1000,
-    };
-  });
 
-  structures = refresh();
+      return {
+        n: sizes[k],
+        ordering: "random",
+        operation: "delete",
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
+    });
 
-  const addingSequential = structures.map((a) => {
-    let now = Microtime.now();
-    if (a.name.localeCompare('Functional RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure = a.structure.insert(i, i);
-      }
-    } else if (a.name.localeCompare('RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.insert(i);
-      }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.add(i, undefined);
-      }
-    } else {
+    structures = refresh();
+
+    const addingSequential = structures.map((a) => {
+      let now = Microtime.now();
+
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.push(i);
       }
-    }
-    return {
-      n: sizes[k],
-      ordering: 'random',
-      operation: 'add',
-      name: a.name,
-      duration: (Microtime.now() - now) / 1000,
-    };
-  });
 
-  const gettingSequential = structures.map((a) => {
-    let now = Microtime.now();
-    if (a.name.localeCompare('Functional RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.get(i);
-      }
-    } else if (a.name.localeCompare('RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.find(i);
-      }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.get(i, undefined);
-      }
-    } else {
+      return {
+        n: sizes[k],
+        ordering: "sequential",
+        operation: "add",
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
+    });
+
+    const gettingSequential = structures.map((a) => {
+      let now = Microtime.now();
+
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.has(i);
       }
-    }
-    return {
-      n: sizes[k],
-      ordering: 'sequential',
-      operation: 'get',
-      name: a.name,
-      duration: (Microtime.now() - now) / 1000,
-    };
-  });
 
-  const gettingByIndexSequential = structures
-    .filter((a) => a.name === 'Flat Bucketed Array')
-    .map((a) => {
+      return {
+        n: sizes[k],
+        ordering: "sequential",
+        operation: "get",
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
+    });
+
+    const gettingByIndexSequential = structures.map((a) => {
       let now = Microtime.now();
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.select(i);
       }
       return {
         n: sizes[k],
-        ordering: 'sequential',
-        operation: 'select',
+        ordering: "sequential",
+        operation: "select",
         name: a.name,
         duration: (Microtime.now() - now) / 1000,
       };
     });
 
-  const deletingSequential = structures.map((a) => {
-    let now = Microtime.now();
-    if (a.name.localeCompare('Functional RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure = a.structure.remove(i);
-      }
-    } else if (a.name.localeCompare('RBTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.remove(i);
-      }
-    } else if (a.name.localeCompare('Fastest BTree') === 0) {
-      for (let i = 0; i < testArrays[k].length; i++) {
-        a.structure.delete(i, undefined);
-      }
-    } else {
+    const deletingSequential = structures.map((a) => {
+      let now = Microtime.now();
+
       for (let i = 0; i < testArrays[k].length; i++) {
         a.structure.delete(i);
       }
-    }
-    return {
-      n: sizes[k],
-      ordering: 'sequential',
-      operation: 'deletion',
-      name: a.name,
-      duration: (Microtime.now() - now) / 1000,
-    };
+
+      return {
+        n: sizes[k],
+        ordering: "sequential",
+        operation: "deletion",
+        name: a.name,
+        duration: (Microtime.now() - now) / 1000,
+      };
+    });
+
+    benches[k] = [
+      addingRandom,
+      gettingRandom,
+      gettingByIndexRandom,
+      deletingRandom,
+      addingSequential,
+      gettingSequential,
+      gettingByIndexSequential,
+      deletingSequential,
+    ];
+  }
+
+  const flattenedBenches = benches.flat(2);
+  for (const bench of flattenedBenches) {
+    console.log(bench);
+  }
+  const outputCsv = stringify(flattenedBenches, {
+    header: true,
   });
-
-  benches[k] = [
-    addingRandom,
-    gettingRandom,
-    gettingByIndexRandom,
-    deletingRandom,
-    addingSequential,
-    gettingSequential,
-    gettingByIndexSequential,
-    deletingSequential,
-  ];
+  fs.writeFileSync(`./${Microtime.now()}.csv`, outputCsv);
+  counter--;
 }
-
-const flattenedBenches = benches.flat(2);
-for (const bench of flattenedBenches) {
-  console.log(bench);
-}
-const outputCsv = stringify(flattenedBenches, {
-  header: true,
-});
-fs.writeFileSync(`./${Microtime.now()}.csv`, outputCsv);

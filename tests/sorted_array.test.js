@@ -1,10 +1,10 @@
-import { SortedArraySet } from '../src/sorted_array.js';
+import { SortedArraySet } from "../sorted_array.js";
 
 const leq = (a, b) => {
   let isItLeq = true;
   if (!(a === undefined || b === undefined)) {
     for (let i = 0; i < a.length; i++) {
-      if ((a[i] <= b[i]) && (b[i] <= a[i])) {
+      if (a[i] <= b[i] && b[i] <= a[i]) {
         continue;
       } else {
         isItLeq = a[i] <= b[i];
@@ -15,7 +15,7 @@ const leq = (a, b) => {
   return isItLeq;
 };
 
-test('add to sorted array set, simple', () => {
+test("add to sorted array set, simple", () => {
   let sortedArraySet = new SortedArraySet(leq);
 
   sortedArraySet.add([1, 2, 3]);
@@ -27,7 +27,7 @@ test('add to sorted array set, simple', () => {
   ]);
 });
 
-test('add to sorted array set, less simple', () => {
+test("add to sorted array set, less simple", () => {
   let sortedArraySet = new SortedArraySet(leq);
 
   sortedArraySet.add([1, 2, 3]);
@@ -37,15 +37,17 @@ test('add to sorted array set, less simple', () => {
   sortedArraySet.add([1, 2, 4]);
   sortedArraySet.add([1, 9, 9]);
 
-  expect(sortedArraySet.bucket).toEqual([[1, 2, 2],
+  expect(sortedArraySet.bucket).toEqual([
+    [1, 2, 2],
     [1, 2, 3],
     [1, 2, 4],
     [1, 3, 5],
     [1, 6, 7],
-    [1, 9, 9]]);
+    [1, 9, 9],
+  ]);
 });
 
-test('Delete from sorted array set', () => {
+test("Delete from sorted array set", () => {
   let sortedArraySet = new SortedArraySet(leq);
 
   sortedArraySet.add([1, 2, 3]);
@@ -87,10 +89,9 @@ test('Delete from sorted array set', () => {
 
   expect(sortedArraySet.max).toEqual(undefined);
   expect(sortedArraySet.bucket).toEqual([]);
-
 });
 
-test('Remove nth from sorted array set', () => {
+test("Remove nth from sorted array set", () => {
   let sortedArraySet = new SortedArraySet(leq);
 
   sortedArraySet.add([1, 2, 3]);

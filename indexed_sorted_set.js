@@ -12,7 +12,7 @@ class IndexedOrderedSet {
         return x <= y;
       };
     this.buckets[0] = new SortedArraySet(this.cmp);
-    this.bucketSize = bucketSize ?? 500;
+    this.bucketSize = bucketSize ?? 1000;
   }
   #balance(firstLevelIndex) {
     const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
@@ -254,7 +254,7 @@ class IndexedOrderedSet {
     let length = 0;
     for (let i = 0; i < this.buckets.length; i++) {
       for (let j = 0; j < this.buckets[i].bucket.length; j++) {
-        callbackFn([length, this.buckets[i].bucket.select(j)]);
+        callbackFn([length, this.buckets[i].select(j)]);
         length += 1;
       }
     }
@@ -451,8 +451,13 @@ class IndexedOrderedSet {
     if (fromFirstLevelIndex === toFirstLevelIndex) {
       this.buckets[fromFirstLevelIndex].bucket.splice(
         fromSecondLevelIndex,
-        fromSecondLevelIndex - toSecondLevelIndex
+        toSecondLevelIndex - fromSecondLevelIndex + 1
       );
+      this.length -= toSecondLevelIndex - fromSecondLevelIndex + 1;
+      this.buckets[fromFirstLevelIndex].max =
+        this.buckets[fromFirstLevelIndex].bucket[
+          this.buckets[fromFirstLevelIndex].bucket.length - 1
+        ];
     } else {
       this.length -=
         this.buckets[fromFirstLevelIndex].bucket.length - fromSecondLevelIndex;
@@ -486,8 +491,13 @@ class IndexedOrderedSet {
     if (fromFirstLevelIndex === toFirstLevelIndex) {
       this.buckets[fromFirstLevelIndex].bucket.splice(
         fromSecondLevelIndex,
-        fromSecondLevelIndex - toSecondLevelIndex
+        toSecondLevelIndex - fromSecondLevelIndex + 1
       );
+      this.length -= toSecondLevelIndex - fromSecondLevelIndex + 1;
+      this.buckets[fromFirstLevelIndex].max =
+        this.buckets[fromFirstLevelIndex].bucket[
+          this.buckets[fromFirstLevelIndex].bucket.length - 1
+        ];
     } else {
       this.length -=
         this.buckets[fromFirstLevelIndex].bucket.length - fromSecondLevelIndex;

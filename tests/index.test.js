@@ -1,13 +1,13 @@
-import { FenwickArray } from '../src';
+import { FenwickArray } from "../index";
 
-test('build index, simple', () => {
+test("build index, simple", () => {
   let lengths = [1, 6, 3, 9, 2];
   let fenwickArray = [1, 7, 3, 19, 2];
   let index = new FenwickArray(lengths);
   expect(fenwickArray).toEqual(index.innerStructure);
 });
 
-test('prefix sum, simple', () => {
+test("prefix sum, simple", () => {
   let lengths = [1, 6, 3, 9, 2];
   let index = new FenwickArray(lengths);
   let prefixSum = [1, 7, 10, 19, 21];
@@ -19,7 +19,7 @@ test('prefix sum, simple', () => {
   expect(prefixSum).toEqual(calculatedPrefixSum);
 });
 
-test('update, simple, adding', () => {
+test("update, simple, adding", () => {
   let lengths = [1, 6, 3, 9, 2];
   let index = new FenwickArray(lengths);
   let prefixSum = [1, 7, 10, 19, 21];
@@ -35,7 +35,7 @@ test('update, simple, adding', () => {
   expect(prefixSum).toEqual(calculatedPrefixSum);
 });
 
-test('update, simple, removing', () => {
+test("update, simple, removing", () => {
   let lengths = [1, 6, 3, 9, 2];
   let index = new FenwickArray(lengths);
   let prefixSum = [1, 7, 10, 19, 21];
@@ -51,7 +51,7 @@ test('update, simple, removing', () => {
   expect(prefixSum).toEqual(calculatedPrefixSum);
 });
 
-test('indexOf, simple', () => {
+test("indexOf, simple", () => {
   let lengths = [1, 6, 3, 9, 2];
   let index = new FenwickArray(lengths);
 
@@ -79,5 +79,4 @@ test('indexOf, simple', () => {
 
   expect(index.indexOf(19)).toEqual(4);
   expect(index.indexOf(20)).toEqual(4);
-
 });

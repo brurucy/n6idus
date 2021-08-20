@@ -1,9 +1,9 @@
 {
-  "name": "sortedset-js",
-  "version": "0.1.0",
+  "name": "n6idus",
+  "version": "0.0.1",
   "type": "module",
-  "description": "A very efficient sorted set implementation",
-  "main": "bench.js",
+  "description": "A collection of novel performance-oriented data structures",
+  "main": "n6idus.js",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
@@ -13,7 +13,6 @@
     "bintrees": "^1.0.2",
     "collections": "^5.1.12",
     "eslint": "^7.32.0",
-    "eslint-config-google": "^0.14.0",
     "eslint-config-pipedrive": "^9.0.1",
     "eslint-config-prettier": "^8.3.0",
     "functional-red-black-tree": "^1.0.1",

@@ -1,4 +1,4 @@
-import { IndexedOrderedSet } from "../src/witchcraft";
+import { IndexedOrderedSet } from "../n6idus";
 
 const leq = (a, b) => {
   let isItLeq = true;
@@ -862,4 +862,26 @@ test("Next lower key", () => {
   expect(iSortedSetA.nextLowerKey([1, 3, 5])).toEqual([1, 2, 3]);
   expect(iSortedSetA.nextLowerKey([1, 2, 3])).toEqual([1, 2, 2]);
   expect(iSortedSetA.nextLowerKey([1, 2, 2])).toEqual(null);
+});
+
+test("Splice coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+  ios.push(9);
+  ios.push(10);
+  ios.spliceByValue(3, 7);
+  const ios2 = new IndexedOrderedSet();
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(8);
+  ios2.push(9);
+  ios2.push(10);
+  expect(ios.sameAs(ios2)).toEqual(true);
 });

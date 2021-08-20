@@ -4,9 +4,11 @@ node_modules
 /.log/
 /.vscode/
 /coverage/
-/package-lock.json
+/experiments/
+/data/
 /src/.DS_Store
 *~
 *#
 \#*
 *.csv
+.Rproj.user
