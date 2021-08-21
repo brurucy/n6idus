@@ -604,19 +604,15 @@ class IndexedOrderedSet {
     } else {
       [firstLevelIndex, secondLevelIndex] = indexes;
       const removal = this.buckets[firstLevelIndex].remove(secondLevelIndex);
-      if (removal === null) {
-        return null;
-      } else {
-        this.index.decreaseLength(firstLevelIndex);
-        if (this.buckets[firstLevelIndex].bucket.length === 0) {
-          if (this.length !== 1) {
-            this.buckets.splice(firstLevelIndex, 1);
-          }
-          this.index = new FenwickArray(this.buckets, true);
+      this.index.decreaseLength(firstLevelIndex);
+      if (this.buckets[firstLevelIndex].bucket.length === 0) {
+        if (this.length !== 1) {
+          this.buckets.splice(firstLevelIndex, 1);
         }
-        this.length = this.length - 1;
-        return removal;
+        this.index = new FenwickArray(this.buckets, true);
       }
+      this.length = this.length - 1;
+      return removal;
     }
   }
   union(otherIndexedSortedSet) {
@@ -842,8 +838,6 @@ class IndexedOrderedSet {
       } else {
         rightInnerIterator = rightInnerIterator + 1;
         rightIterator = rightIterator + 1;
-        productInnerIterator = productInnerIterator + 1;
-        product[productOuterIterator].push(currentRightValue);
       }
     }
     productIndexedSortedSet.fromPreBucketedArray(product);

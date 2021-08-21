@@ -885,3 +885,420 @@ test("Splice coverage", () => {
   ios2.push(10);
   expect(ios.sameAs(ios2)).toEqual(true);
 });
+
+test("Line 200 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  expect(
+    ios.every(([position, value]) => {
+      return value % 2 === 0;
+    })
+  ).toEqual(false);
+});
+test("Line 215-218 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(3);
+  expect(
+    ios.some(([position, value]) => {
+      return value % 2 === 0;
+    })
+  ).toEqual(false);
+});
+test("Line 254-258 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  let length = 0;
+  ios.forEach(([,]) => {
+    length += 1;
+  });
+  expect(length).toEqual(2);
+});
+test("Line 373 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  const ios2 = new IndexedOrderedSet();
+  ios2.push(2);
+  ios2.push(3);
+  expect(ios.sliceByIndex(1, 2).sameAs(ios2)).toEqual(true);
+});
+test("Line 388-392 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  ios2.push(5);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  expect(ios.sliceByIndex(1, 7).sameAs(ios2)).toEqual(true);
+});
+test("Line 415 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  const ios2 = new IndexedOrderedSet();
+  ios2.push(2);
+  ios2.push(3);
+  expect(ios.sliceByValue(2, 3).sameAs(ios2)).toEqual(true);
+});
+test("Line 452-457 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+
+  ios.spliceByIndex(1, 7);
+
+  expect(ios.sameAs(ios2)).toEqual(true);
+});
+test("Line 552 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  expect(ios.push(2)).toEqual(null);
+});
+test("Line 582 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  expect(ios.delete(3)).toEqual(null);
+});
+test("Line 603 coverage", () => {
+  const ios = new IndexedOrderedSet();
+  ios.push(1);
+  ios.push(2);
+  expect(ios.deleteByIndex(2)).toEqual(null);
+});
+test("Line 645-646 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(6);
+  ios2.push(9);
+  ios2.push(151);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(1);
+  ios3.push(2);
+  ios3.push(3);
+  ios3.push(6);
+  ios3.push(9);
+  ios3.push(151);
+  expect(ios.union(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 680-685 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  expect(ios.union(ios2).sameAs(ios)).toEqual(true);
+});
+test("Line 739-741 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(1);
+  ios3.push(2);
+  ios3.push(3);
+  expect(ios.intersection(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 808-810 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(2);
+  ios2.push(3);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(1);
+  expect(ios.difference(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 819 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(2);
+  ios2.push(3);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(1);
+  expect(ios.difference(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 821-824 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(2);
+  ios2.push(3);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(1);
+  ios3.push(4);
+  expect(ios.difference(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 839-842 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(4);
+  ios.push(5);
+  ios.push(6);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(2);
+  ios2.push(3);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(4);
+  ios3.push(5);
+  ios3.push(6);
+  expect(ios.difference(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 890-892 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(2);
+  ios2.push(3);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(1);
+  expect(ios.symmetricDifference(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 895-898 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(4);
+  expect(ios.symmetricDifference(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 900-903 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  const ios3 = new IndexedOrderedSet(undefined, 1);
+  ios3.push(4);
+  expect(ios.symmetricDifference(ios2).sameAs(ios3)).toEqual(true);
+});
+test("Line 950-951 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  ios.push(1);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(3);
+  expect(ios.sameAs(ios2)).toEqual(false);
+});
+test("Line 987-988 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  ios2.push(9);
+  ios2.push(10);
+  expect(ios.isDisjointWith(ios2)).toEqual(true);
+});
+test("Line 1000-1005 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  ios2.push(5);
+  expect(ios.isDisjointWith(ios2)).toEqual(false);
+});
+test("Line 1017 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 1);
+  expect(ios.isEmpty()).toEqual(true);
+});
+test("Line 1065-1070 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  ios2.push(9);
+  ios2.push(10);
+  expect(ios.isSubsetOf(ios2)).toEqual(false);
+});
+test("Line 1069-1070 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  const ios2 = new IndexedOrderedSet(undefined, 2);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  ios2.push(9);
+  ios2.push(10);
+  expect(ios2.isSubsetOf(ios)).toEqual(false);
+});
+test("Line 1126-1131 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  const ios2 = new IndexedOrderedSet(undefined, 2);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  ios2.push(5);
+  ios2.push(6);
+  expect(ios.isProperSubsetOf(ios2)).toEqual(true);
+});
+test("Line 1127-1128", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(2);
+  ios.push(3);
+  ios.push(4);
+  ios.push(5);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+  const ios2 = new IndexedOrderedSet(undefined, 2);
+  ios2.push(1);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  expect(ios.isProperSubsetOf(ios2)).toEqual(false);
+});
+test("Line 1139 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  ios2.push(5);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  expect(ios.isProperSubsetOf(ios2)).toEqual(true);
+});
+test("Line 1190-1195 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  ios2.push(5);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  expect(ios2.isSupersetOf(ios)).toEqual(true);
+});
+test("Line 1194-1195", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  ios2.push(5);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  expect(ios.isSupersetOf(ios2)).toEqual(false);
+});
+test("Line 1251-1256 coverage", () => {
+  const ios = new IndexedOrderedSet(undefined, 2);
+  ios.push(1);
+  ios.push(6);
+  ios.push(7);
+  ios.push(8);
+  const ios2 = new IndexedOrderedSet(undefined, 1);
+  ios2.push(1);
+  ios2.push(2);
+  ios2.push(3);
+  ios2.push(4);
+  ios2.push(5);
+  ios2.push(6);
+  ios2.push(7);
+  ios2.push(8);
+  expect(ios.isProperSupersetOf(ios2)).toEqual(false);
+  expect(ios2.isProperSupersetOf(ios)).toEqual(true);
+});

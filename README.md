@@ -23,6 +23,7 @@ Sometime in the future, we will also have(in this order):
    1. Our Indexed Ordered Set is **very** fast`. It beats the crap out of **all other** JS set implementations.
    2. it is **the only** one that supports getting the i-th element in **logarithmic** time
    3. The API is quite rich. We cover all major ES6 goodies and offer many iterators and range updates.
+   4. **100**% test coverage.
 
 The key factor that allows these points to hold true is that it is not a Tree. If you ever used Python you 
 might have come across [sorted containers](https://github.com/grantjenks/python-sortedcontainers), which was one of the
@@ -936,6 +937,10 @@ Adding, searching and deleting were tested, with different insertion approaches:
 
 ![Sequential Search](./imgs/get_seq.png)
 
+##### Getting the i-th element in Sequential Order
+
+![Sequential Selection](./imgs/select_seq.png)
+
 ##### Deleting in Sequential Order
 
 ![Sequential Deletion](./imgs/delete_seq.png)
@@ -944,14 +949,14 @@ Adding, searching and deleting were tested, with different insertion approaches:
 
 ![Random Add](./imgs/add_rand.png)
 
-##### Searching in Random Order
+##### Getting the i-th element in Random Order
 
-![Random Search](./imgs/get_rand.png)
+![Random Search](./imgs/select_rand.png)
+
+##### Selecting the i-th element
+
+![Random Selection](./imgs/selection.png)
 
 ##### Deleting in Random Order
 
 ![Random Deletion](./imgs/delete_rand.png)
-
-##### Selecting the i-th element
-
-![Selection](./imgs/selection.png)

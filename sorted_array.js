@@ -12,24 +12,6 @@ class SortedArraySet {
       return this.bucket[nth];
     }
   }
-  // Returns the sum of values that are smaller OR EQUAL to the given number
-  rank(item) {
-    let low = 0,
-      high = this.bucket.length,
-      mid = 0;
-
-    while (low < high) {
-      mid = (low + high) >>> 1;
-      let midVal = this.bucket[mid];
-      if (midVal !== undefined && this.cmp(midVal, item)) {
-        low = mid + 1;
-      } else {
-        high = mid;
-      }
-    }
-
-    return high;
-  }
   indexOf(item) {
     let low = 0,
       high = this.bucket.length,
@@ -38,7 +20,11 @@ class SortedArraySet {
     while (low < high) {
       mid = (low + high) >>> 1;
       let midVal = this.bucket[mid];
-      if (midVal !== undefined && this.cmp(midVal, item) && !this.cmp(item, midVal)) {
+      if (
+        midVal !== undefined &&
+        this.cmp(midVal, item) &&
+        !this.cmp(item, midVal)
+      ) {
         low = mid + 1;
       } else {
         high = mid;

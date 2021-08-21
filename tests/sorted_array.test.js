@@ -120,3 +120,8 @@ test("Remove nth from sorted array set", () => {
   expect(sortedArraySet.max).toEqual(undefined);
   expect(sortedArraySet.bucket).toEqual([]);
 });
+
+test("Remove non existing", () => {
+  const sas = new SortedArraySet(leq);
+  expect(sas.remove(1)).toEqual(null);
+});
