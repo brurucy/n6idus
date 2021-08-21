@@ -951,13 +951,13 @@ Adding, searching and deleting were tested, with different insertion approaches:
 
 ![Random Add](./imgs/add_rand.png)
 
+##### Searching in Random Order
+
+![Random Search](./imgs/get_rand.png)
+
 ##### Getting the i-th element in Random Order
 
 ![Random Search](./imgs/select_rand.png)
-
-##### Selecting the i-th element
-
-![Random Selection](./imgs/selection.png)
 
 ##### Deleting in Random Order
 
