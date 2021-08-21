@@ -1,4 +1,6 @@
 # N6idus <img height="138.5" src="./imgs/logo.png" align="right"/>
+[![Node.js CI](https://github.com/brurucy/n6idus/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/brurucy/n6idus/actions/workflows/node.js.yml)
+
 
 ### TOC
 
