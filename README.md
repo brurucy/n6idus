@@ -7,49 +7,107 @@
 
   1. Intro
   2. Why should you use N6idus?
-  3. The API 
+  3. The API
+     * push(item)
+     * has(item)
+     * select(ith)
+     * delete(item)
+     * deleteByindex(ith)
+     * filter(callbackFn, cmp, bucketSize)
+     * map(callbackFn, cmp, bucketSize)
+     * reduce(callbackFn, acc)
+     * reduceRight(callbackFn, acc)
+     * forEach(callbackFn)
+     * makeForwardCursor()
+     * makeBackwardsCursor()
+     * makeForwardCursorByIndex(ith, ith)
+     * makeBackwardsCursorByIndex(ith, ith)
+     * makeForwardCursorByValue(item, item)
+     * makeBackwardsCursorByValue(item, item)
+     * union(otherIndexedOrderedSet)
+     * intersection(otherIndexedOrderedSet)
+     * difference(otherIndexedOrderedSet)
+     * symmetricDifference(otherIndexedOrderedSet)
+     * sameAs(otherIndexedOrderedSet)
+     * isSuperset(otherIndexedOrderedSet)
+     * isProperSuperset(otherIndexedOrderedSet)
+     * isSubset(otherIndexedOrderedSet)
+     * isProperSubset(otherIndexedOrderedSet)
+     * isDisjointWith(otherIndexedOrderedSet)
+     * isEmpty(otherIndexedOrderedSet)
+     * getMin()
+     * getMax()
+     * pop()
+     * shift()
+     * sliceByValue(item, item)
+     * spliceByValue(item, item)
+     * sliceByIndex(ith, ith)
+     * spliceByIndex(ith, ith)
+     * toArray()
+     * filterToArray(callbackFn)
+     * mapToArray(callbackFn)
+     * every(callbackFn)
+     * some(callbackFn)
+     * nextHigherKey(item)
+     * nextLowerKey(item)
   4. Benchmarks
+     * Adding in sequential order
+     * Searching in sequential order
+     * Getting the i-th element in sequential order
+     * Deleting in sequential order
+     * Adding in random order
+     * Searching in random order
+     * Getting the i-th element in random order
+     * Deleting in random order
 
 ### Intro
 
-N6idus is an opinionated collection of **very** experimental data structures optimized for **extreme** performance with a very rich API.
+N6idus is an opinionated collection of experimental data structures optimized for performance.
 
-At the moment we only have a **Flat Bucketed Array** that implements a **Indexed Ordered Set**.
+At the moment we provide a single data structure, the **Flat Bucketed Array**, which is used to implement a **Indexed Ordered Set**.
+
+Here are the use cases in which people usually yearn for **Indexed Ordered Sets**
+
+1. Virtually any purpose that you would use a search tree for AND
+2. You need to fetch the i-th element in logarithmic time AND
+3. You want to use set operations
 
 Sometime in the future, we will also have(in this order):
 
    1. Indexed Ordered Map, planned to be released on 0.1.0
    2. Persistent Indexed Ordered Set, 0.2.0
 
-### Why waste your time with N6idus's Indexed Ordered Set?
+### Why should you use N6idus?
 
-   1. Our Indexed Ordered Set is **very** fast`. It beats the crap out of **all other** JS set implementations.
-   2. it is **the only** one that supports getting the i-th element in **logarithmic** time
-   3. The API is quite rich. We cover all major ES6 goodies and offer many iterators and range updates.
-   4. **100**% test coverage.
+Our **Indexed Ordered Set** is fast. Really, **Really** fast.
 
-The key factor that allows these points to hold true is that it is not a Tree. If you ever used Python you 
-might have come across [sorted containers](https://github.com/grantjenks/python-sortedcontainers), which was one of the
-sources of inspiration for this library.
+In fact, just go to the benchmarks session and see. It's around twice as fast as the currently fastest search tree.
 
-The main difference from this implementation to `sortedcontainers` is of a different balancing mechanism and
-a much more effective indexing strategy, that uses a [Fenwick Array](https://en.wikipedia.org/wiki/Fenwick_tree).
+The perplexingly simple data structure behind it, the **Flat Bucketed Array**, is nothing but an array of arrays of fixed size
+with a clever [Fenwick Array](https://en.wikipedia.org/wiki/Fenwick_tree) as an index, that uses a **special** algorithm 
+to bisect it in **O(log(n))** instead of **O(log^2(n))**time.
 
-Here are some complexities, with **B** being the **load factor/bucket size**:
+It is quite similar to [sortedcontainers](https://github.com/grantjenks/python-sortedcontainers), with the main difference
+being in the indexing and balancing strategy.
 
-| operation   | worst-case complexity  |
-|-------------|----------------------- |
-| push(n)     |         O(B)           |
-| has(n)      |  O(log(n/B) * log(B))  |
-| select(ith) |   O(log(n/B))          |
-| delete(n)   |   O(B)                 |
+**Also, we have 100% test coverage.**
+
+Here are the worst-case complexities, with **B** being the **load factor/bucket size**:
+
+| operation   |     worst-case complexity  |
+|-------------|--------------------------- |
+| push(n)     |         O(B)               |
+| has(n)      |  O(log(n/B) * log(B))      |
+| select(ith) |   O(log(n/B))              |
+| delete(n)   |   O(B)                     |
+
 
 ### The API
 
-Here's some points:
+Here's how the **Flat Bucketed Array** looks like, underneath:
 
 1. The main object is the **Indexed Ordered Set**, which is comprised of **SortedArraySet**s with fixed **load factor/bucket size** lengths.
-2. A **SortedArraySet** is just a length-limited array with a **max** attribute. All operations ensure sortedness.
+2. A **SortedArraySet** is just a length-limited array with a **max** attribute and with all operations ensuring sortedness.
 3. You can (and should) provide a **cmp** function. However, **WARNING**, the cmp function should be a **partial order**, that is, you have to be able to say that some **x** is **less than or equal to** some y. Here is the default cmp function: ```(x, y) => { return x <= y }```
 
 Please, report any and **all** bugs you might come across.
@@ -921,16 +979,23 @@ console.log(ios.nextLowerKey(1));
 
 #### Indexed Ordered Set
 
-We've benchmarked the Flat Bucketed Array, with differing **Load Factor** values against the **most popular** collections for sorted sets:
+We've benchmarked the **Flat Bucketed Array**, with differing **Load Factor** values against the **most popular** collections for sorted sets:
 
 1. [Splay Tree from CollectionsJS](https://www.collectionsjs.com/sorted-set)
-2. [The Fastest BTree](https://www.npmjs.com/package/sorted-btree)
+2. [The (supposedly)Fastest BTree](https://www.npmjs.com/package/sorted-btree)
 3. [Non-persistent Red-Black Tree](https://www.npmjs.com/package/bintrees)
 4. [Persistent Red-Black Tree](https://www.npmjs.com/package/functional-red-black-tree)
 
 The test machine was an M1 MBA, and there were more than ten thousand runs averaged out for the following plots.
 
-Adding, searching and deleting were tested, with different insertion approaches: sequentially, that is, monotonically, unrealistically, and random.
+Adding, searching and deleting were tested, with different insertion approaches: sequentially, that is
+monotonically and unrealistically, and at random(realistically).
+
+The **Flat Bucketed Array** is, at least, around **twice** as fast as all others in every single benchmark but the sequential
+deletion one, due to how balancing is done, however, the **spliceByValue** and **spliceByIndex** functions offset that.
+
+It's not likely that you would ever have to actually change a load factor different than the default, however, if you do
+I hope that these benchmarks will serve as a reference for tuning that parameter.
 
 ##### Adding in Sequential Order
 
