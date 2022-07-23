@@ -1,112 +1,112 @@
-import { SortedArraySet } from "../sorted_array.js";
+import { SortedArraySet } from "../src/ds/sorted_array";
 
-test("add to sorted array set, simple", () => {
-  const sortedArraySet = new SortedArraySet();
 
-  sortedArraySet.add([1, 2, 3]);
-  sortedArraySet.add([1, 2, 2]);
+describe("SortedArraySet", () => {
+    describe("add", () => {
+        it("does not add if already in, updates the maximum element correctly", () => {
+            const sortedArraySet = new SortedArraySet<number>()
 
-  expect(sortedArraySet.bucket).toEqual([
-    [1, 2, 2],
-    [1, 2, 3],
-  ]);
-});
+            expect(sortedArraySet.add(1)).toEqual(1)
+            expect(sortedArraySet.getMax()).toEqual(1)
+            expect(sortedArraySet.add(1)).toBeUndefined()
 
-test("add to sorted array set, less simple", () => {
-  let sortedArraySet = new SortedArraySet(leq);
+            expect(sortedArraySet.add(3)).toEqual(3)
+            expect(sortedArraySet.add(3)).toBeUndefined()
+            expect(sortedArraySet.getMax()).toEqual(3)
 
-  sortedArraySet.add([1, 2, 3]);
-  sortedArraySet.add([1, 2, 2]);
-  sortedArraySet.add([1, 6, 7]);
-  sortedArraySet.add([1, 3, 5]);
-  sortedArraySet.add([1, 2, 4]);
-  sortedArraySet.add([1, 9, 9]);
+            expect(sortedArraySet.add(2)).toEqual(2)
+            expect(sortedArraySet.getMax()).toEqual(2)
+            expect(sortedArraySet.add(2)).toBeUndefined()
+        })
+    })
 
-  expect(sortedArraySet.bucket).toEqual([
-    [1, 2, 2],
-    [1, 2, 3],
-    [1, 2, 4],
-    [1, 3, 5],
-    [1, 6, 7],
-    [1, 9, 9],
-  ]);
-});
+    describe("delete", () => {
+        it("does not delete if not in, updates the maximum element correctly", () => {
+            const sortedArraySet = new SortedArraySet<number>()
 
-test("Delete from sorted array set", () => {
-  let sortedArraySet = new SortedArraySet(leq);
+            sortedArraySet.add(1)
+            sortedArraySet.add(2)
+            sortedArraySet.add(3)
 
-  sortedArraySet.add([1, 2, 3]);
-  sortedArraySet.add([1, 2, 2]);
-  sortedArraySet.add([1, 6, 7]);
-  sortedArraySet.add([1, 3, 5]);
-  sortedArraySet.add([1, 2, 4]);
-  sortedArraySet.add([1, 9, 9]);
+            expect(sortedArraySet.delete(1)).toEqual(1)
+            expect(sortedArraySet.delete(1)).toBeUndefined()
 
-  expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.has([1, 2, 3])).toEqual(true);
-  sortedArraySet.delete([1, 2, 3]);
-  expect(sortedArraySet.has([1, 2, 3])).toEqual(false);
+            expect(sortedArraySet.getMax()).toEqual(3)
+            expect(sortedArraySet.delete(3)).toEqual(3)
+            expect(sortedArraySet.delete(3)).toBeUndefined()
 
-  expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.has([1, 6, 7])).toEqual(true);
-  sortedArraySet.delete([1, 6, 7]);
-  expect(sortedArraySet.has([1, 6, 7])).toEqual(false);
+            expect(sortedArraySet.getMax()).toEqual(2)
+            expect(sortedArraySet.delete(2)).toEqual(2)
+            expect(sortedArraySet.delete(2)).toBeUndefined()
 
-  expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.has([1, 2, 2])).toEqual(true);
-  sortedArraySet.delete([1, 2, 2]);
-  expect(sortedArraySet.has([1, 2, 2])).toEqual(false);
+            expect(sortedArraySet.getMax()).toBeUndefined()
+        })
+    })
 
-  expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.has([1, 2, 4])).toEqual(true);
-  sortedArraySet.delete([1, 2, 4]);
-  expect(sortedArraySet.has([1, 2, 4])).toEqual(false);
+    describe("has", () => {
+        it("correctly asserts that an item is in", () => {
+            const sortedArraySet = new SortedArraySet<number>()
 
-  expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.has([1, 3, 5])).toEqual(true);
-  sortedArraySet.delete([1, 3, 5]);
-  expect(sortedArraySet.has([1, 3, 5])).toEqual(false);
+            sortedArraySet.add(1)
+            sortedArraySet.add(2)
+            sortedArraySet.add(3)
 
-  expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.has([1, 9, 9])).toEqual(true);
-  sortedArraySet.delete([1, 9, 9]);
-  expect(sortedArraySet.has([1, 9, 9])).toEqual(false);
+            expect(sortedArraySet.has(1)).toBeTruthy()
+            expect(sortedArraySet.has(2)).toBeTruthy()
+            expect(sortedArraySet.has(3)).toBeTruthy()
 
-  expect(sortedArraySet.max).toEqual(undefined);
-  expect(sortedArraySet.bucket).toEqual([]);
-});
+            sortedArraySet.delete(1)
+            expect(sortedArraySet.has(1)).toBeFalsy()
 
-test("Remove nth from sorted array set", () => {
-  let sortedArraySet = new SortedArraySet(leq);
+            sortedArraySet.delete(2)
+            expect(sortedArraySet.has(2)).toBeFalsy()
 
-  sortedArraySet.add([1, 2, 3]);
-  sortedArraySet.add([1, 2, 2]);
-  sortedArraySet.add([1, 6, 7]);
-  sortedArraySet.add([1, 3, 5]);
-  sortedArraySet.add([1, 2, 4]);
-  sortedArraySet.add([1, 9, 9]);
+            sortedArraySet.delete(3)
+            expect(sortedArraySet.has(3)).toBeFalsy()
+        })
+    })
 
-  sortedArraySet.remove(0);
-  expect(sortedArraySet.max).toEqual([1, 9, 9]);
-  expect(sortedArraySet.select(0)).toEqual([1, 2, 3]);
-  sortedArraySet.remove(4);
-  expect(sortedArraySet.max).toEqual([1, 6, 7]);
-  expect(sortedArraySet.select(3)).toEqual([1, 6, 7]);
-  sortedArraySet.remove(3);
-  expect(sortedArraySet.max).toEqual([1, 3, 5]);
-  expect(sortedArraySet.select(2)).toEqual([1, 3, 5]);
-  sortedArraySet.remove(2);
-  expect(sortedArraySet.max).toEqual([1, 2, 4]);
-  expect(sortedArraySet.select(1)).toEqual([1, 2, 4]);
-  sortedArraySet.remove(1);
-  expect(sortedArraySet.select(0)).toEqual([1, 2, 3]);
-  sortedArraySet.remove(0);
-  expect(sortedArraySet.select(0)).toEqual(null);
-  expect(sortedArraySet.max).toEqual(undefined);
-  expect(sortedArraySet.bucket).toEqual([]);
-});
 
-test("Remove non existing", () => {
-  const sas = new SortedArraySet(leq);
-  expect(sas.remove(1)).toEqual(null);
-});
+    describe("select", () => {
+        it("correctly checks for boundaries", () => {
+            const sortedArraySet = new SortedArraySet<number>()
+
+            sortedArraySet.add(1)
+
+            expect(sortedArraySet.select(-1)).toBeUndefined()
+            expect(sortedArraySet.select(1)).toBeUndefined()
+        })
+        it("returns the expected value", () => {
+            const sortedArraySet = new SortedArraySet<number>()
+
+            sortedArraySet.add(3)
+            sortedArraySet.add(2)
+            sortedArraySet.add(1)
+
+            expect(sortedArraySet.select(0)).toEqual(1)
+            expect(sortedArraySet.select(1)).toEqual(2)
+            expect(sortedArraySet.select(2)).toEqual(3)
+        })
+    })
+
+    describe("remove", () => {
+        it("does not remove if not in, updates the maximum element correctly", () => {
+            const sortedArraySet = new SortedArraySet<number>()
+
+            sortedArraySet.add(1)
+            sortedArraySet.add(2)
+            sortedArraySet.add(3)
+
+            expect(sortedArraySet.getMax()).toEqual(3)
+            expect(sortedArraySet.remove(0)).toEqual(1)
+            expect(sortedArraySet.remove(2)).toBeUndefined()
+
+            expect(sortedArraySet.remove(1)).toEqual(3)
+            expect(sortedArraySet.getMax()).toEqual(2)
+
+            expect(sortedArraySet.remove(0)).toEqual(2)
+            expect(sortedArraySet.remove(0)).toBeUndefined()
+            expect(sortedArraySet.getMax()).toBeUndefined()
+        });
+    })
+})
