@@ -30,7 +30,7 @@ export class SortedArraySet<K = any> {
       return undefined;
     } else {
       this.bucket.splice(position, 0, item);
-      if (this.max === undefined || this.compare(this.max, item)) {
+      if (this.max === undefined || this.compare(this.max, item) <= 0) {
         this.max = item;
       }
       return item;
