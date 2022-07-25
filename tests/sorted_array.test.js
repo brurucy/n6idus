@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var sorted_array_1 = require("../src/ds/sorted_array");
+var sorted_array_1 = require("../src/data_structures/sorted_array");
 describe("SortedArraySet", function () {
     describe("add", function () {
         it("does not add if already in, updates the maximum element correctly", function () {

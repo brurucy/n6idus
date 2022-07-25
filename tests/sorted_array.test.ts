@@ -1,4 +1,4 @@
-import { SortedArraySet } from "../src/ds/sorted_array";
+import { SortedArraySet } from "../src/data_structures/sorted_array";
 
 
 describe("SortedArraySet", () => {

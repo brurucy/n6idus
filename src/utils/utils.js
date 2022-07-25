@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.indexOf = exports.defaultComparator = void 0;
+exports.leastSignificantBit = exports.mostSignificantBit = exports.indexOf = exports.defaultComparator = void 0;
 function defaultComparator(a, b) {
     // Special case finite numbers first for performance.
     // Note that the trick of using 'a - b' and checking for NaN to detect non-numbers
@@ -63,3 +63,18 @@ function indexOf(container, high, item, cmp) {
     return high;
 }
 exports.indexOf = indexOf;
+function mostSignificantBit(value) {
+    var result = value;
+    result |= result >> 1;
+    result |= result >> 2;
+    result |= result >> 4;
+    result |= result >> 8;
+    result |= result >> 16;
+    result |= result >> 32;
+    return result - (result >> 1);
+}
+exports.mostSignificantBit = mostSignificantBit;
+function leastSignificantBit(value) {
+    return value & -value;
+}
+exports.leastSignificantBit = leastSignificantBit;

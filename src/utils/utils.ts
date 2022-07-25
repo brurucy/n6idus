@@ -84,3 +84,20 @@ export function indexOf<K>(container: NumberIndexable<K>, high: number, item: K,
   }
   return high;
 }
+
+export function mostSignificantBit(value: number): number {
+    let result = value;
+
+    result |= result >> 1;
+    result |= result >> 2;
+    result |= result >> 4;
+    result |= result >> 8;
+    result |= result >> 16;
+    result |= result >> 32;
+
+    return result - (result >> 1);
+}
+
+export function leastSignificantBit(value: number): number {
+  return value & -value;
+}
