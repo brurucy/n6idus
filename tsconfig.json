@@ -3,6 +3,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "strict": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "target": "ES6",
+    "sourceMap": true,
+    "module": "commonjs"
   }
 }

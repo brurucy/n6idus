@@ -1,29 +1,32 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.SortedArraySet = void 0;
-var utils_1 = require("../utils/utils");
-var SortedArraySet = /** @class */ (function () {
-    function SortedArraySet(compare) {
+const utils_1 = require("../utils/utils");
+class SortedArraySet {
+    constructor(compare) {
         this.compare =
             compare || utils_1.defaultComparator;
         this.bucket = [];
     }
-    SortedArraySet.prototype.getMax = function () {
+    length() {
+        return this.bucket.length;
+    }
+    getMax() {
         return this.max;
-    };
-    SortedArraySet.prototype.select = function (nth) {
+    }
+    select(nth) {
         if (nth < 0 || nth >= this.bucket.length) {
             return undefined;
         }
         else {
             return this.bucket[nth];
         }
-    };
-    SortedArraySet.prototype.indexOf = function (item) {
+    }
+    indexOf(item) {
         return (0, utils_1.indexOf)(this.bucket, this.bucket.length, item, this.compare);
-    };
-    SortedArraySet.prototype.add = function (item) {
-        var position = this.indexOf(item);
+    }
+    add(item) {
+        const position = this.indexOf(item);
         if (this.compare(this.bucket[position], item) == 0) {
             return undefined;
         }
@@ -34,9 +37,9 @@ var SortedArraySet = /** @class */ (function () {
             }
             return item;
         }
-    };
-    SortedArraySet.prototype["delete"] = function (item) {
-        var position = this.indexOf(item);
+    }
+    delete(item) {
+        const position = this.indexOf(item);
         if (this.compare(this.bucket[position], item) == 0) {
             this.bucket.splice(position, 1);
             if (this.max != undefined) {
@@ -49,13 +52,13 @@ var SortedArraySet = /** @class */ (function () {
         else {
             return undefined;
         }
-    };
-    SortedArraySet.prototype.has = function (item) {
-        var position = this.indexOf(item);
+    }
+    has(item) {
+        const position = this.indexOf(item);
         return this.compare(this.bucket[position], item) == 0;
-    };
-    SortedArraySet.prototype.remove = function (nth) {
-        var item = this.select(nth);
+    }
+    remove(nth) {
+        const item = this.select(nth);
         if (item === undefined) {
             return undefined;
         }
@@ -73,7 +76,7 @@ var SortedArraySet = /** @class */ (function () {
             }
             return item;
         }
-    };
-    return SortedArraySet;
-}());
+    }
+}
 exports.SortedArraySet = SortedArraySet;
+//# sourceMappingURL=sorted_array.js.map

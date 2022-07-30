@@ -6,7 +6,7 @@ describe("SortedArraySet", () => {
         describe("does not add if already in, updates the maximum element correctly", () => {
             const sortedArraySet = new SortedArraySet<number>()
 
-            const cases: Array<[number, number]> = [[1, 1], [3, 3], [2, 2]]
+            const cases: Array<[number, number]> = [[1, 1], [3, 3], [2, 3]]
             test.each(cases)("add %d result of add again %d expected max %d", (valueToAdd, expectedMax) => {
                 expect(sortedArraySet.add(valueToAdd)).toEqual(valueToAdd)
                 expect(sortedArraySet.add(valueToAdd)).toBeUndefined()
@@ -51,7 +51,6 @@ describe("SortedArraySet", () => {
             })
         })
     })
-
 
     describe("select", () => {
         describe("correctly checks for boundaries", () => {

@@ -1,14 +1,18 @@
 import { defaultComparator, indexOf } from "../utils/utils";
 
 export class SortedArraySet<K = any> {
-  private readonly bucket: K[];
-  private max: K | undefined;
+  bucket: K[];
+  max: K | undefined;
   private readonly compare: (a: K, b: K) => number;
 
   public constructor(compare?: (a: K, b: K) => number) {
     this.compare =
       compare || (defaultComparator as any as (a: K, b: K) => number);
     this.bucket = [];
+  }
+
+  public length(): number {
+    return this.bucket.length
   }
 
   public getMax(): K | undefined {
@@ -22,7 +26,7 @@ export class SortedArraySet<K = any> {
     }
   }
   public indexOf(item: K): number {
-    return indexOf<K>(this.bucket, this.bucket.length, item, this.compare)
+    return indexOf(this.bucket, this.bucket.length, item, this.compare)
   }
   public add(item: K): K | undefined {
     const position = this.indexOf(item);

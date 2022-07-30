@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.leastSignificantBit = exports.mostSignificantBit = exports.indexOf = exports.defaultComparator = void 0;
 function defaultComparator(a, b) {
     // Special case finite numbers first for performance.
@@ -11,8 +11,8 @@ function defaultComparator(a, b) {
     }
     // The default < and > operators are not totally ordered. To allow types to be mixed
     // in a single collection, compare types and order values of different types by type.
-    var ta = typeof a;
-    var tb = typeof b;
+    let ta = typeof a;
+    let tb = typeof b;
     if (ta !== tb) {
         return ta < tb ? -1 : 1;
     }
@@ -49,10 +49,10 @@ function defaultComparator(a, b) {
 }
 exports.defaultComparator = defaultComparator;
 function indexOf(container, high, item, cmp) {
-    var low = 0, mid = 0;
+    let low = 0, mid = 0;
     while (low < high) {
         mid = (low + high) >>> 1;
-        var midVal = container[mid];
+        let midVal = container[mid];
         if (cmp(midVal, item) < 0) {
             low = mid + 1;
         }
@@ -64,7 +64,7 @@ function indexOf(container, high, item, cmp) {
 }
 exports.indexOf = indexOf;
 function mostSignificantBit(value) {
-    var result = value;
+    let result = value;
     result |= result >> 1;
     result |= result >> 2;
     result |= result >> 4;
@@ -78,3 +78,4 @@ function leastSignificantBit(value) {
     return value & -value;
 }
 exports.leastSignificantBit = leastSignificantBit;
+//# sourceMappingURL=utils.js.map

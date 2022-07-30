@@ -69,7 +69,7 @@ export interface NumberIndexable<K> {
   [x: number]: K
 }
 
-export function indexOf<K>(container: NumberIndexable<K>, high: number, item: K, cmp: (a: K, b: K) => number): number {
+export function indexOf<K, T>(container: NumberIndexable<K>, high: number, item: T, cmp: (a: K, b: T) => number): number {
   let low = 0,
       mid = 0;
 

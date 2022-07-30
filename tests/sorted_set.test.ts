@@ -1,25 +1,26 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const sorted_set_1 = require("../src/data_structures/sorted_set");
+import { IndexedSortedArraySet } from "../src/data_structures/sorted_set"
+
 // That's how simple it is to morph it into an array.
-function flattenBuckets(indexedSortedArraySet) {
-    let out = new Array();
+function flattenBuckets<K>(indexedSortedArraySet: IndexedSortedArraySet<K>): K[] {
+    let out = new Array<K>()
     for (const bucket of indexedSortedArraySet.buckets) {
         for (const item of bucket.bucket) {
-            out.push(item);
+            out.push(item)
         }
     }
-    return out;
+    return out
 }
+
 describe("IndexedSortedArraySet", () => {
     describe("push", () => {
         describe("adds and returns undefined if an attempt to add a duplicate occurs", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
-            const cases = [[1, 1], [1, undefined]];
+            const indexedSortedArraySet = new IndexedSortedArraySet<number>(2)
+
+            const cases: Array<[number, number | undefined]> = [[1, 1], [1, undefined]]
             test.each(cases)("adding %d returns %d", (value, out) => {
-                expect(indexedSortedArraySet.push(value)).toEqual(out);
-            });
-        });
+                expect(indexedSortedArraySet.push(value)).toEqual(out)
+            })
+        })
         // This test is a lot more complex than it seems, since we are also testing the balance subroutine
         // which is by far the sketchiest part of the data structure.
         // However, in itself, it is a simple operation:
@@ -31,60 +32,64 @@ describe("IndexedSortedArraySet", () => {
         // The "bucket size" property defines the point in which this splitting will occur. If we set it to 2, this means that
         // each underlying bucket will call `balance` once its length is greater than 2.
         describe("maintains the underlying sorted order", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet<number>(2)
+
             for (const item of [3, 1, 2, 4, 5, 10]) {
-                indexedSortedArraySet.push(item);
+                indexedSortedArraySet.push(item)
             }
-            expect(flattenBuckets(indexedSortedArraySet)).toEqual([1, 2, 3, 4, 5, 10]);
-        });
-    });
+            expect(flattenBuckets(indexedSortedArraySet)).toEqual([1, 2, 3, 4, 5, 10])
+        })
+    })
+
     describe("locate", () => {
-        class ExtendedIndexedSortedArraySet extends sorted_set_1.IndexedSortedArraySet {
-            constructor(bucketSize) {
-                super(bucketSize);
+        class ExtendedIndexedSortedArraySet<K> extends IndexedSortedArraySet<K> {
+            constructor(bucketSize: number) {
+                super(bucketSize)
             }
-            locateExtended(nth) {
+            public locateExtended(nth: number): undefined | [number, number] {
                 return this.locate(nth);
             }
-            pushExtended(item) {
-                return this.push(item);
+            public pushExtended(item: K): K | undefined {
+                return this.push(item)
             }
         }
         describe("correctly checks for invalid boundaries", () => {
-            const extendedIndexedSortedArraySet = new ExtendedIndexedSortedArraySet(2);
-            extendedIndexedSortedArraySet.pushExtended(1);
-            const cases = [[-1, undefined], [1, undefined]];
+            const extendedIndexedSortedArraySet = new ExtendedIndexedSortedArraySet(2)
+            extendedIndexedSortedArraySet.pushExtended(1)
+
+            const cases: Array<[number, undefined]> = [[-1, undefined], [1, undefined]]
             test.each(cases)("locating %d returns %d", (nth, location) => {
-                expect(extendedIndexedSortedArraySet.locateExtended(nth)).toEqual(location);
-            });
-        });
+                expect(extendedIndexedSortedArraySet.locateExtended(nth)).toEqual(location)
+            })
+        })
         describe("returns the expected two-level position", () => {
-            const extendedIndexedSortedArraySet = new ExtendedIndexedSortedArraySet(2);
+            const extendedIndexedSortedArraySet = new ExtendedIndexedSortedArraySet(2)
+
             for (const item of [3, 1, 2, 4, 5, 10]) {
-                extendedIndexedSortedArraySet.pushExtended(item);
+                extendedIndexedSortedArraySet.pushExtended(item)
             }
-            const cases = [
+
+            const cases: Array<[number, number, [number, number]]> = [
                 [2, 3, [1, 0]],
                 [0, 1, [0, 0]],
                 [1, 2, [0, 1]],
                 [3, 4, [1, 1]],
                 [4, 5, [2, 0]],
                 [5, 10, [2, 1]]
-            ];
+            ]
             test.each(cases)("%d is in bucket %d at the %d position", (nth, value, [expectedBucketNumber, expectedPositionInBucket]) => {
-                const locatingAttempt = extendedIndexedSortedArraySet.locateExtended(nth);
+                const locatingAttempt = extendedIndexedSortedArraySet.locateExtended(nth)
                 if (locatingAttempt != undefined) {
-                    expect(locatingAttempt[0]).toEqual(expectedBucketNumber);
-                    expect(locatingAttempt[1]).toEqual(expectedPositionInBucket);
+                    expect(locatingAttempt[0]).toEqual(expectedBucketNumber)
+                    expect(locatingAttempt[1]).toEqual(expectedPositionInBucket)
                     // Here we are taking the returned indexes, and accessing them
-                    expect(extendedIndexedSortedArraySet.buckets[locatingAttempt[0]].select(locatingAttempt[1])).toEqual(value);
+                    expect(extendedIndexedSortedArraySet.buckets[locatingAttempt[0]].select(locatingAttempt[1])).toEqual(value)
+                } else {
+                    fail("locating attempt should never be undefined")
                 }
-                else {
-                    fail("locating attempt should never be undefined");
-                }
-            });
-        });
-    });
+            })
+        })
+    })
     // Slightly tricky function.
     // When `this.makeCursor` is called, the second argument, forward, is the direction of the return result
     // of calling `this.next`. So, the direction of the first element to be returned is determined by makeCursor.
@@ -93,35 +98,40 @@ describe("IndexedSortedArraySet", () => {
     describe("make cursor", function () {
         const elementsToBeInserted = [3, 1, 2, 4, 5, 10];
         describe("traverses the entire structure forward by position", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2)
+
             for (const item of elementsToBeInserted) {
-                indexedSortedArraySet.push(item);
+                indexedSortedArraySet.push(item)
             }
-            const enumeratedSortedArray = new Array();
+
+            const enumeratedSortedArray = new Array<[number, number]>();
             for (const item of flattenBuckets(indexedSortedArraySet).entries()) {
-                enumeratedSortedArray.push(item);
+                enumeratedSortedArray.push(item)
             }
-            const initiallyForwardCursor = indexedSortedArraySet.makeCursor(0, true);
+
+            const initiallyForwardCursor = indexedSortedArraySet.makeCursor(0, true)
             test.each(enumeratedSortedArray)("expected %d got %d", (expectedIndex, expectedValue) => {
-                const nextForward = initiallyForwardCursor.next(true);
-                expect(nextForward.value).toEqual([expectedIndex, expectedValue]);
-            });
-        });
+                const nextForward = initiallyForwardCursor.next(true)
+                expect(nextForward.value).toEqual([expectedIndex, expectedValue])
+            })
+        })
         describe("traverses the entire structure backwards by position", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2)
+
             for (const item of elementsToBeInserted) {
-                indexedSortedArraySet.push(item);
+                indexedSortedArraySet.push(item)
             }
-            const invertedEnumeratedSortedArray = new Array();
+
+            const invertedEnumeratedSortedArray = new Array<[number, number]>();
             for (const item of flattenBuckets(indexedSortedArraySet).entries()) {
-                invertedEnumeratedSortedArray.push(item);
+                invertedEnumeratedSortedArray.push(item)
             }
-            const initiallyBackwardsCursor = indexedSortedArraySet.makeCursor(indexedSortedArraySet.length - 1, false);
+
+            const initiallyBackwardsCursor = indexedSortedArraySet.makeCursor(indexedSortedArraySet.length - 1, false)
             test.each(invertedEnumeratedSortedArray.reverse())("expected %d got %d", (expectedIndex, expectedValue) => {
-                const nextForward = initiallyBackwardsCursor.next(false);
-                expect(nextForward.value).toEqual([expectedIndex, expectedValue]);
-            });
-        });
+                const nextForward = initiallyBackwardsCursor.next(false)
+                expect(nextForward.value).toEqual([expectedIndex, expectedValue])
+            })
+        })
     });
-});
-//# sourceMappingURL=sorted_set.test.js.map
+})

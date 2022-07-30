@@ -1,18 +1,18 @@
 import {leastSignificantBit, mostSignificantBit} from "../utils/utils";
 
-type anyToInt<K = any> = (a: K) => number;
+type anyToInt<K> = (a: K) => number;
 
 function simpleProbe(item: number): number {
   return item
 }
 
-export class FenwickArray<K = any> {
+export class FenwickArray {
   readonly innerStructure: number[]
 
-  constructor(arr: Array<K>, probe?: anyToInt<K>)  {
+  constructor(arr: Array<any>, probe?: anyToInt<any>)  {
     const length = arr.length;
     this.innerStructure = new Array(length);
-    probe = probe || (simpleProbe as anyToInt)
+    probe = probe || (simpleProbe as anyToInt<any>)
     this.innerStructure[0] = probe(arr[0]);
     for (let i = 1; i < length; i++) {
       this.innerStructure[i] = this.innerStructure[i - 1] + probe(arr[i]);
