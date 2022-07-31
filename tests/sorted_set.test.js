@@ -90,7 +90,7 @@ describe("IndexedSortedArraySet", () => {
     // of calling `this.next`. So, the direction of the first element to be returned is determined by makeCursor.
     // The same holds true for all elements. Calling `this.next(true)` means that the **next** result will be forward
     // not the current one that is returned by next.
-    describe("make cursor", function () {
+    describe("make cursor", () => {
         const elementsToBeInserted = [3, 1, 2, 4, 5, 10];
         describe("traverses the entire structure forward by position", () => {
             const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
@@ -120,6 +120,130 @@ describe("IndexedSortedArraySet", () => {
             test.each(invertedEnumeratedSortedArray.reverse())("expected %d got %d", (expectedIndex, expectedValue) => {
                 const nextForward = initiallyBackwardsCursor.next(false);
                 expect(nextForward.value).toEqual([expectedIndex, expectedValue]);
+            });
+        });
+    });
+    describe("intersection", () => {
+        describe("satisfies the definition of intersection", () => {
+            const A = new sorted_set_1.IndexedSortedArraySet(2);
+            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
+            const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
+            for (const item of elementsToBeInsertedA) {
+                A.push(item);
+            }
+            for (const item of elementsToBeInsertedB) {
+                B.push(item);
+            }
+            const AIB = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [1, 2, 5, 10]) {
+                AIB.push(item);
+            }
+            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const cases = [
+                [A, B, AIB],
+                [B, A, AIB],
+                [A, A, A],
+                [B, B, B],
+                [B, emptySet, emptySet],
+                [A, emptySet, emptySet]
+            ];
+            test.each(cases)("%v ∩ %v = %v", (L, R, LIR) => {
+                expect(flattenBuckets(L.intersection(R))).toEqual(flattenBuckets(LIR));
+            });
+        });
+    });
+    describe("union", () => {
+        describe("satisfies the definition of union", () => {
+            const A = new sorted_set_1.IndexedSortedArraySet(2);
+            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
+            const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
+            for (const item of elementsToBeInsertedA) {
+                A.push(item);
+            }
+            for (const item of elementsToBeInsertedB) {
+                B.push(item);
+            }
+            const AUB = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [1, 2, 3, 4, 5, 6, 10, 11]) {
+                AUB.push(item);
+            }
+            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const cases = [
+                [A, B, AUB],
+                [B, A, AUB],
+                [A, A, A],
+                [B, B, B],
+                [B, emptySet, B],
+                [A, emptySet, A]
+            ];
+            test.each(cases)("%v ∪ %v = %v", (L, R, LUR) => {
+                expect(flattenBuckets(L.union(R))).toEqual(flattenBuckets(LUR));
+            });
+        });
+    });
+    describe("difference", () => {
+        describe("satisfies the definition of difference", () => {
+            const A = new sorted_set_1.IndexedSortedArraySet(2);
+            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
+            const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
+            for (const item of elementsToBeInsertedA) {
+                A.push(item);
+            }
+            for (const item of elementsToBeInsertedB) {
+                B.push(item);
+            }
+            const ADB = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [3, 4]) {
+                ADB.push(item);
+            }
+            const BDA = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [6, 11]) {
+                BDA.push(item);
+            }
+            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const cases = [
+                [A, B, ADB],
+                [B, A, BDA],
+                [A, A, emptySet],
+                [B, B, emptySet],
+                [B, emptySet, B],
+                [A, emptySet, A]
+            ];
+            test.each(cases)("%v \ %v = %v", (L, R, LDR) => {
+                expect(flattenBuckets(L.difference(R))).toEqual(flattenBuckets(LDR));
+            });
+        });
+    });
+    describe("symmetricDifference", () => {
+        describe("satisfies the definition of symmetricDifference", () => {
+            const A = new sorted_set_1.IndexedSortedArraySet(2);
+            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
+            const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
+            for (const item of elementsToBeInsertedA) {
+                A.push(item);
+            }
+            for (const item of elementsToBeInsertedB) {
+                B.push(item);
+            }
+            const ADB = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [3, 4, 6, 11]) {
+                ADB.push(item);
+            }
+            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const cases = [
+                [A, B, ADB],
+                [B, A, ADB],
+                [A, A, emptySet],
+                [B, B, emptySet],
+                [B, emptySet, B],
+                [A, emptySet, A]
+            ];
+            test.each(cases)("%v Δ %v = %v", (L, R, LDR) => {
+                expect(flattenBuckets(L.symmetricDifference(R))).toEqual(flattenBuckets(LDR));
             });
         });
     });

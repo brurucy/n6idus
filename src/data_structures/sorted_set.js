@@ -21,9 +21,10 @@ class IndexedSortedArraySet {
         });
     }
     balance(firstLevelIndex) {
-        const half = Math.ceil(this.buckets[firstLevelIndex].bucket.length / 2);
-        const newBucketContents = this.buckets[firstLevelIndex].bucket.slice(half, this.buckets[firstLevelIndex].bucket.length);
-        const oldBucketContents = this.buckets[firstLevelIndex].bucket.slice(0, half);
+        const proposedBucket = this.buckets[firstLevelIndex].bucket;
+        const half = Math.ceil(proposedBucket.length / 2);
+        const newBucketContents = proposedBucket.slice(half, proposedBucket.length);
+        const oldBucketContents = proposedBucket.slice(0, half);
         const newArraySet = new sorted_array_1.SortedArraySet(this.compare);
         this.buckets[firstLevelIndex] = new sorted_array_1.SortedArraySet(this.compare);
         newArraySet.bucket = newBucketContents;
@@ -56,6 +57,25 @@ class IndexedSortedArraySet {
         }
         this.length += 1;
         return add;
+    }
+    // **Use this function carefully**
+    // Only when you are absolutely sure that you are adding an element that:
+    // 1. Is not already in
+    // 2. Is greater than all other elements currently in
+    append(item) {
+        let lastBucketPosition = this.buckets.length - 1;
+        if (this.buckets[lastBucketPosition].length() < this.bucketSize - 1) {
+            this.buckets[lastBucketPosition].bucket.push(item);
+            this.index.increaseLength(lastBucketPosition);
+        }
+        else {
+            this.buckets.push(new sorted_array_1.SortedArraySet());
+            lastBucketPosition += 1;
+            this.buckets[lastBucketPosition].bucket.push(item);
+            this.buildIndex();
+        }
+        this.buckets[lastBucketPosition].max = item;
+        return item;
     }
     locate(nth) {
         if (nth >= this.length || nth < 0) {
@@ -119,6 +139,84 @@ class IndexedSortedArraySet {
                 currentIndex -= 1;
             }
         }
+    }
+    binaryIteratingOperation(otherIndexedSortedArraySet, fGreater, fEq, fLess) {
+        const A = this.makeCursor(0, true);
+        const B = otherIndexedSortedArraySet.makeCursor(0, true);
+        let currentValueA = A.next(true);
+        let currentValueB = B.next(true);
+        const outputIndexedSortedArraySet = new IndexedSortedArraySet(this.bucketSize, this.compare);
+        while (!currentValueA.done && !currentValueB.done) {
+            if (currentValueA.value[1] != undefined && currentValueB.value[1] != undefined) {
+                const cmp = this.compare(currentValueA.value[1], currentValueB.value[1]);
+                if (cmp > 0) {
+                    [currentValueA, currentValueB] = fGreater(currentValueA, A, currentValueB, B, outputIndexedSortedArraySet);
+                }
+                else if (cmp == 0) {
+                    [currentValueA, currentValueB] = fEq(currentValueA, A, currentValueB, B, outputIndexedSortedArraySet);
+                }
+                else {
+                    [currentValueA, currentValueB] = fLess(currentValueA, A, currentValueB, B, outputIndexedSortedArraySet);
+                }
+            }
+        }
+        return outputIndexedSortedArraySet;
+    }
+    intersection(otherIndexedSortedArraySet) {
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            return [currentValueA, B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore this will never be void since there is a check inside the parent function that prevents that
+            // unfortunately typescript's type inference isn't advanced enough to go up the call stack
+            outputIndexedSortedArraySet.append(currentValueA.value[1]);
+            return [A.next(true), B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            return [A.next(true), currentValueB];
+        });
+    }
+    union(otherIndexedSortedArraySet) {
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore
+            outputIndexedSortedArraySet.push(currentValueB.value[1]);
+            // @ts-ignore
+            outputIndexedSortedArraySet.push(currentValueA.value[1]);
+            return [A.next(true), B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore
+            outputIndexedSortedArraySet.push(currentValueA.value[1]);
+            return [A.next(true), B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore
+            outputIndexedSortedArraySet.push(currentValueB.value[1]);
+            // @ts-ignore
+            outputIndexedSortedArraySet.push(currentValueA.value[1]);
+            return [A.next(true), B.next(true)];
+        });
+    }
+    difference(otherIndexedSortedArraySet) {
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore
+            return [currentValueA, B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            return [A.next(true), B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore
+            outputIndexedSortedArraySet.append(currentValueA.value[1]);
+            return [A.next(true), currentValueB];
+        });
+    }
+    symmetricDifference(otherIndexedSortedArraySet) {
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore
+            outputIndexedSortedArraySet.append(currentValueB.value[1]);
+            return [currentValueA, B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            return [A.next(true), B.next(true)];
+        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
+            // @ts-ignore
+            outputIndexedSortedArraySet.append(currentValueA.value[1]);
+            return [A.next(true), currentValueB];
+        });
     }
 }
 exports.IndexedSortedArraySet = IndexedSortedArraySet;
