@@ -1,7 +1,7 @@
 import { IndexedSortedArraySet } from "../src/data_structures/sorted_set"
 
 // That's how simple it is to morph it into an array.
-function flattenBuckets<K>(indexedSortedArraySet: IndexedSortedArraySet<K>): K[] {
+function flattenBuckets<K>(indexedSortedArraySet: IndexedSortedArraySet<K>): Array<K> {
     let out = new Array<K>()
     for (const bucket of indexedSortedArraySet.buckets) {
         for (const item of bucket.bucket) {
@@ -164,7 +164,7 @@ describe("IndexedSortedArraySet", () => {
                 [A, emptySet, emptySet]
             ]
 
-            test.each(cases)("%v ∩ %v = %v", (L, R, LIR) => {
+            test.each(cases)("%s ∩ %s = %s", (L, R, LIR) => {
                 expect(flattenBuckets(L.intersection(R))).toEqual(flattenBuckets(LIR))
             })
         })
@@ -199,7 +199,7 @@ describe("IndexedSortedArraySet", () => {
                 [A, emptySet, A]
             ]
 
-            test.each(cases)("%v ∪ %v = %v", (L, R, LUR) => {
+            test.each(cases)("%s ∪ %s = %s", (L, R, LUR) => {
                 expect(flattenBuckets(L.union(R))).toEqual(flattenBuckets(LUR))
             })
         })
@@ -238,7 +238,7 @@ describe("IndexedSortedArraySet", () => {
                 [A, emptySet, A]
             ]
 
-            test.each(cases)("%v \ %v = %v", (L, R, LDR) => {
+            test.each(cases)("%s \ %s = %s", (L, R, LDR) => {
                 expect(flattenBuckets(L.difference(R))).toEqual(flattenBuckets(LDR))
             })
         })
@@ -273,8 +273,38 @@ describe("IndexedSortedArraySet", () => {
                 [A, emptySet, A]
             ]
 
-            test.each(cases)("%v Δ %v = %v", (L, R, LDR) => {
+            test.each(cases)("%s Δ %s = %s", (L, R, LDR) => {
                 expect(flattenBuckets(L.symmetricDifference(R))).toEqual(flattenBuckets(LDR))
+            })
+        })
+    })
+    describe("Symbol.iterator", () => {
+        describe("correctly iterates from the beginning til the end", () => {
+            const A = new IndexedSortedArraySet(2)
+            const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
+
+            for (const item of elementsToBeInsertedA) {
+                A.push(item)
+            }
+
+            const iterationResult = new Array<number>()
+            for (const item of A) {
+                iterationResult.push(item)
+            }
+
+            const emptySet = new IndexedSortedArraySet(2)
+
+            const cases = [
+                [A, flattenBuckets(A)],
+                [emptySet, []]
+            ]
+
+            test.each(cases)(`iterating %s yields %s`, (L, R) => {
+                const iterationResult = new Array<number>()
+                for (const item of L) {
+                    iterationResult.push(item)
+                }
+                expect(iterationResult).toEqual(R)
             })
         })
     })

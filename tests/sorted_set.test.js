@@ -148,7 +148,7 @@ describe("IndexedSortedArraySet", () => {
                 [B, emptySet, emptySet],
                 [A, emptySet, emptySet]
             ];
-            test.each(cases)("%v ∩ %v = %v", (L, R, LIR) => {
+            test.each(cases)("%s ∩ %s = %s", (L, R, LIR) => {
                 expect(flattenBuckets(L.intersection(R))).toEqual(flattenBuckets(LIR));
             });
         });
@@ -178,7 +178,7 @@ describe("IndexedSortedArraySet", () => {
                 [B, emptySet, B],
                 [A, emptySet, A]
             ];
-            test.each(cases)("%v ∪ %v = %v", (L, R, LUR) => {
+            test.each(cases)("%s ∪ %s = %s", (L, R, LUR) => {
                 expect(flattenBuckets(L.union(R))).toEqual(flattenBuckets(LUR));
             });
         });
@@ -212,7 +212,7 @@ describe("IndexedSortedArraySet", () => {
                 [B, emptySet, B],
                 [A, emptySet, A]
             ];
-            test.each(cases)("%v \ %v = %v", (L, R, LDR) => {
+            test.each(cases)("%s \ %s = %s", (L, R, LDR) => {
                 expect(flattenBuckets(L.difference(R))).toEqual(flattenBuckets(LDR));
             });
         });
@@ -242,8 +242,33 @@ describe("IndexedSortedArraySet", () => {
                 [B, emptySet, B],
                 [A, emptySet, A]
             ];
-            test.each(cases)("%v Δ %v = %v", (L, R, LDR) => {
+            test.each(cases)("%s Δ %s = %s", (L, R, LDR) => {
                 expect(flattenBuckets(L.symmetricDifference(R))).toEqual(flattenBuckets(LDR));
+            });
+        });
+    });
+    describe("Symbol.iterator", () => {
+        describe("correctly iterates from the beginning til the end", () => {
+            const A = new sorted_set_1.IndexedSortedArraySet(2);
+            const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
+            for (const item of elementsToBeInsertedA) {
+                A.push(item);
+            }
+            const iterationResult = new Array();
+            for (const item of A) {
+                iterationResult.push(item);
+            }
+            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const cases = [
+                [A, flattenBuckets(A)],
+                [emptySet, []]
+            ];
+            test.each(cases)(`iterating %s yields %s`, (L, R) => {
+                const iterationResult = new Array();
+                for (const item of L) {
+                    iterationResult.push(item);
+                }
+                expect(iterationResult).toEqual(R);
             });
         });
     });
