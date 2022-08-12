@@ -1,11 +1,16 @@
 {
   "name": "n6idus",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "type": "module",
   "description": "A collection of novel performance-oriented data structures",
   "main": "n6idus.js",
+  "bugs": {
+    "url": "https://github.com/brurucy/n6idus/issues"
+  },
+  "homepage": "https://github.com/brurucy/n6idus#readme",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "build": "tsc"
   },
   "author": "Rucy",
   "license": "ISC",
