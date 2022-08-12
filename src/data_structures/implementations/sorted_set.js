@@ -76,13 +76,16 @@ class IndexedSortedArraySet {
         this.buckets.splice(firstLevelIndex + 1, 0, newArraySet);
         this.buildIndex();
     }
-    push(item) {
-        let firstLevelIndex = (0, utils_1.indexOf)(this.buckets, this.buckets.length, item, (bucket, item) => {
+    bucketsIndexOf(item) {
+        return (0, utils_1.indexOf)(this.buckets, this.buckets.length, item, (bucket, item) => {
             if (bucket.max == undefined) {
                 return -1;
             }
             return this.compare(bucket.max, item);
         });
+    }
+    push(item) {
+        let firstLevelIndex = this.bucketsIndexOf(item);
         if (this.buckets[firstLevelIndex] === undefined) {
             firstLevelIndex = firstLevelIndex - 1;
         }
@@ -117,6 +120,49 @@ class IndexedSortedArraySet {
         }
         this.buckets[lastBucketPosition].max = item;
         return item;
+    }
+    delete(item) {
+        let firstLevelIndex = this.bucketsIndexOf(item);
+        if (this.buckets[firstLevelIndex] === undefined) {
+            firstLevelIndex = firstLevelIndex - 1;
+        }
+        const deletion = this.buckets[firstLevelIndex].delete(item);
+        if (deletion === undefined) {
+            return undefined;
+        }
+        if (this.buckets[firstLevelIndex].bucket.length === 0) {
+            if (this.buckets.length != 1) {
+                this.buckets.splice(firstLevelIndex, 1);
+            }
+            this.buildIndex();
+        }
+        else {
+            this.index.decreaseLength(firstLevelIndex);
+        }
+        this.length -= 1;
+        return deletion;
+    }
+    remove(nth) {
+        const coordinates = this.locate(nth);
+        if (coordinates === undefined) {
+            return undefined;
+        }
+        const firstLevelIndex = coordinates[0];
+        const removal = this.buckets[firstLevelIndex].remove(coordinates[1]);
+        if (removal === undefined) {
+            return undefined;
+        }
+        if (this.buckets[firstLevelIndex].bucket.length === 0) {
+            if (this.buckets.length != 1) {
+                this.buckets.splice(firstLevelIndex, 1);
+            }
+            this.buildIndex();
+        }
+        else {
+            this.index.decreaseLength(firstLevelIndex);
+        }
+        this.length -= 1;
+        return removal;
     }
     locate(nth) {
         if (nth >= this.length || nth < 0) {
@@ -184,7 +230,7 @@ class IndexedSortedArraySet {
             }
         }
     }
-    binaryIteratingOperation(otherIndexedSortedArraySet, fGreater, fEq, fLess, drainA, drainB) {
+    binaryIteratingOperation(otherIndexedSortedArraySet, incrementGreater, incrementEqual, incrementLess, drainA, drainB) {
         const A = this.makeCursor(0, true);
         const B = otherIndexedSortedArraySet.makeCursor(0, true);
         let currentValueA = A.next(true);
@@ -195,13 +241,22 @@ class IndexedSortedArraySet {
                 currentValueB.value[1] != undefined) {
                 const cmp = this.compare(currentValueA.value[1], currentValueB.value[1]);
                 if (cmp > 0) {
-                    [currentValueA, currentValueB] = fGreater(currentValueA, A, currentValueB, B, outputIndexedSortedArraySet);
+                    if (incrementGreater) {
+                        outputIndexedSortedArraySet.append(currentValueB.value[1]);
+                    }
+                    currentValueB = B.next(true);
                 }
                 else if (cmp == 0) {
-                    [currentValueA, currentValueB] = fEq(currentValueA, A, currentValueB, B, outputIndexedSortedArraySet);
+                    if (incrementEqual) {
+                        outputIndexedSortedArraySet.append(currentValueA.value[1]);
+                    }
+                    [currentValueA, currentValueB] = [A.next(true), B.next(true)];
                 }
                 else {
-                    [currentValueA, currentValueB] = fLess(currentValueA, A, currentValueB, B, outputIndexedSortedArraySet);
+                    if (incrementLess) {
+                        outputIndexedSortedArraySet.append(currentValueA.value[1]);
+                    }
+                    currentValueA = A.next(true);
                 }
             }
         }
@@ -214,56 +269,43 @@ class IndexedSortedArraySet {
         return outputIndexedSortedArraySet;
     }
     intersection(otherIndexedSortedArraySet) {
-        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            return [currentValueA, B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore typescript doesn't catch this, since there is some nonlinear control flow(notice how
-            // we check that both currentValueA and currentValueB aren't undefined before calling this
-            outputIndexedSortedArraySet.append(currentValueA.value[1]);
-            return [A.next(true), B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            return [A.next(true), currentValueB];
-        }, false, false);
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, true, false, false, false, false);
     }
     union(otherIndexedSortedArraySet) {
-        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore
-            outputIndexedSortedArraySet.append(currentValueB.value[1]);
-            return [currentValueA, B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore
-            outputIndexedSortedArraySet.append(currentValueA.value[1]);
-            return [A.next(true), B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore
-            outputIndexedSortedArraySet.append(currentValueA.value[1]);
-            return [A.next(true), currentValueB];
-        }, true, true);
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, true, true, true, true, true);
     }
     difference(otherIndexedSortedArraySet) {
-        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore
-            return [currentValueA, B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            return [A.next(true), B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore
-            outputIndexedSortedArraySet.append(currentValueA.value[1]);
-            return [A.next(true), currentValueB];
-        }, true, false);
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, false, false, true, true, false);
     }
     symmetricDifference(otherIndexedSortedArraySet) {
-        return this.binaryIteratingOperation(otherIndexedSortedArraySet, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore
-            outputIndexedSortedArraySet.append(currentValueB.value[1]);
-            return [currentValueA, B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            return [A.next(true), B.next(true)];
-        }, (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-            // @ts-ignore
-            outputIndexedSortedArraySet.append(currentValueA.value[1]);
-            return [A.next(true), currentValueB];
-        }, true, true);
+        return this.binaryIteratingOperation(otherIndexedSortedArraySet, true, false, true, true, true);
+    }
+    // set equality operations
+    // map/foreach/filter/reduce
+    filter(callbackFn) {
+        const out = new IndexedSortedArraySet(this.bucketSize, this.compare);
+        for (const item of this) {
+            if (callbackFn(item)) {
+                out.append(item);
+            }
+        }
+        return out;
+    }
+    map(callbackFn, newCmp) {
+        const out = new IndexedSortedArraySet(this.bucketSize, newCmp);
+        for (const item of this) {
+            out.push(callbackFn(item));
+        }
+        return out;
+    }
+    reduce(callbackFn, initialValue) {
+        let acc = initialValue;
+        let currentPosition = 0;
+        for (const item of this) {
+            acc = callbackFn(acc, item, currentPosition);
+            currentPosition += 1;
+        }
+        return acc;
     }
 }
 exports.IndexedSortedArraySet = IndexedSortedArraySet;

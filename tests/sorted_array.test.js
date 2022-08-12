@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const sorted_array_1 = require("../src/data_structures/sorted_array");
+const sorted_array_1 = require("../src/data_structures/implementations/sorted_array");
 describe("SortedArraySet", () => {
     describe("add", () => {
         describe("does not add if already in, updates the maximum element correctly", () => {

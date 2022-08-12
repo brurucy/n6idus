@@ -2,7 +2,6 @@
 [![Node.js CI](https://github.com/brurucy/n6idus/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/brurucy/n6idus/actions/workflows/node.js.yml)
 [![codecov](https://codecov.io/gh/brurucy/n6idus/branch/master/graph/badge.svg?token=QXJ6IGPOOX)](https://codecov.io/gh/brurucy/n6idus)
 
-
 ### TOC
 
   1. Intro

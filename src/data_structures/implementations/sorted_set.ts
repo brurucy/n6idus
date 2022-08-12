@@ -26,14 +26,6 @@ function drainGenerator<K>(
   }
 }
 
-type binaryIteratingFunction = <K>(
-  currentValueA: PositionAndValueIterator<K>,
-  A: PositionAndValueGenerator<K>,
-  currentValueB: PositionAndValueIterator<K>,
-  B: PositionAndValueGenerator<K>,
-  outputIndexedSortedArraySet: IndexedSortedArraySet<K>
-) => [PositionAndValueIterator<K>, PositionAndValueIterator<K>];
-
 export class IndexedSortedArraySet<K = any> implements Iterable<K> {
   public readonly buckets: SortedArraySet<K>[];
   private readonly bucketSize: number;
@@ -119,18 +111,22 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     this.buildIndex();
   }
 
-  push(item: K): K | undefined {
-    let firstLevelIndex = indexOf(
-      this.buckets,
-      this.buckets.length,
-      item,
-      (bucket: SortedArraySet<K>, item: K) => {
-        if (bucket.max == undefined) {
-          return -1;
+  private bucketsIndexOf(item: K): number {
+    return indexOf(
+        this.buckets,
+        this.buckets.length,
+        item,
+        (bucket: SortedArraySet<K>, item: K) => {
+          if (bucket.max == undefined) {
+            return -1;
+          }
+          return this.compare(bucket.max, item);
         }
-        return this.compare(bucket.max, item);
-      }
-    );
+    )
+  }
+
+  push(item: K): K | undefined {
+    let firstLevelIndex = this.bucketsIndexOf(item);
     if (this.buckets[firstLevelIndex] === undefined) {
       firstLevelIndex = firstLevelIndex - 1;
     }
@@ -163,6 +159,49 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     }
     this.buckets[lastBucketPosition].max = item;
     return item;
+  }
+
+  delete(item: K): K | undefined {
+    let firstLevelIndex = this.bucketsIndexOf(item);
+    if (this.buckets[firstLevelIndex] === undefined) {
+      firstLevelIndex = firstLevelIndex - 1
+    }
+    const deletion = this.buckets[firstLevelIndex].delete(item)
+    if (deletion === undefined) {
+      return undefined;
+    }
+    if (this.buckets[firstLevelIndex].bucket.length === 0) {
+      if (this.buckets.length != 1) {
+        this.buckets.splice(firstLevelIndex, 1)
+      }
+      this.buildIndex()
+    } else {
+      this.index.decreaseLength(firstLevelIndex)
+    }
+    this.length -= 1;
+    return deletion
+  }
+
+  remove(nth: number): K | undefined {
+    const coordinates = this.locate(nth)
+    if (coordinates === undefined) {
+      return undefined
+    }
+    const firstLevelIndex = coordinates[0]
+    const removal = this.buckets[firstLevelIndex].remove(coordinates[1])
+    if (removal === undefined) {
+      return undefined;
+    }
+    if (this.buckets[firstLevelIndex].bucket.length === 0) {
+      if (this.buckets.length != 1) {
+        this.buckets.splice(firstLevelIndex, 1)
+      }
+      this.buildIndex()
+    } else {
+      this.index.decreaseLength(firstLevelIndex)
+    }
+    this.length -= 1;
+    return removal
   }
 
   protected locate(nth: number): undefined | [number, number] {
@@ -248,9 +287,9 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
 
   private binaryIteratingOperation(
     otherIndexedSortedArraySet: IndexedSortedArraySet<K>,
-    fGreater: binaryIteratingFunction,
-    fEq: binaryIteratingFunction,
-    fLess: binaryIteratingFunction,
+    incrementGreater: boolean,
+    incrementEqual: boolean,
+    incrementLess: boolean,
     drainA: boolean,
     drainB: boolean
   ): IndexedSortedArraySet<K> {
@@ -274,29 +313,26 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
           currentValueB.value[1]
         );
         if (cmp > 0) {
-          [currentValueA, currentValueB] = fGreater(
-            currentValueA,
-            A,
-            currentValueB,
-            B,
-            outputIndexedSortedArraySet
-          );
+          if (
+              incrementGreater
+          ) {
+            outputIndexedSortedArraySet.append(currentValueB.value[1])
+          }
+          currentValueB = B.next(true)
         } else if (cmp == 0) {
-          [currentValueA, currentValueB] = fEq(
-            currentValueA,
-            A,
-            currentValueB,
-            B,
-            outputIndexedSortedArraySet
-          );
+          if (
+              incrementEqual
+          ) {
+            outputIndexedSortedArraySet.append(currentValueA.value[1])
+          }
+          [currentValueA, currentValueB] = [A.next(true), B.next(true)]
         } else {
-          [currentValueA, currentValueB] = fLess(
-            currentValueA,
-            A,
-            currentValueB,
-            B,
-            outputIndexedSortedArraySet
-          );
+          if (
+              incrementLess
+          ) {
+            outputIndexedSortedArraySet.append(currentValueA.value[1])
+          }
+          currentValueA = A.next(true)
         }
       }
     }
@@ -313,21 +349,12 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     otherIndexedSortedArraySet: IndexedSortedArraySet<K>
   ): IndexedSortedArraySet<K> {
     return this.binaryIteratingOperation(
-      otherIndexedSortedArraySet,
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        return [currentValueA, B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore typescript doesn't catch this, since there is some nonlinear control flow(notice how
-        // we check that both currentValueA and currentValueB aren't undefined before calling this
-        outputIndexedSortedArraySet.append(currentValueA.value[1]);
-        return [A.next(true), B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        return [A.next(true), currentValueB];
-      },
+        otherIndexedSortedArraySet,
+        true,
         false,
-        false
+        false,
+        false,
+        false,
     );
   }
 
@@ -335,24 +362,12 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     otherIndexedSortedArraySet: IndexedSortedArraySet<K>
   ): IndexedSortedArraySet<K> {
     return this.binaryIteratingOperation(
-      otherIndexedSortedArraySet,
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore
-        outputIndexedSortedArraySet.append(currentValueB.value[1]);
-        return [currentValueA, B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore
-        outputIndexedSortedArraySet.append(currentValueA.value[1]);
-        return [A.next(true), B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore
-        outputIndexedSortedArraySet.append(currentValueA.value[1]);
-        return [A.next(true), currentValueB];
-      },
+        otherIndexedSortedArraySet,
         true,
-        true
+        true,
+        true,
+        true,
+        true,
     );
   }
 
@@ -360,21 +375,12 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     otherIndexedSortedArraySet: IndexedSortedArraySet<K>
   ): IndexedSortedArraySet<K> {
     return this.binaryIteratingOperation(
-      otherIndexedSortedArraySet,
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore
-        return [currentValueA, B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        return [A.next(true), B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore
-        outputIndexedSortedArraySet.append(currentValueA.value[1]);
-        return [A.next(true), currentValueB];
-      },
+        otherIndexedSortedArraySet,
+        false,
+        false,
         true,
-        false
+        true,
+        false,
     );
   }
 
@@ -382,22 +388,49 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     otherIndexedSortedArraySet: IndexedSortedArraySet<K>
   ): IndexedSortedArraySet<K> {
     return this.binaryIteratingOperation(
-      otherIndexedSortedArraySet,
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore
-        outputIndexedSortedArraySet.append(currentValueB.value[1]);
-        return [currentValueA, B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        return [A.next(true), B.next(true)];
-      },
-      (currentValueA, A, currentValueB, B, outputIndexedSortedArraySet) => {
-        // @ts-ignore
-        outputIndexedSortedArraySet.append(currentValueA.value[1]);
-        return [A.next(true), currentValueB];
-      },
+        otherIndexedSortedArraySet,
         true,
-        true
+        false,
+        true,
+        true,
+        true,
     );
+  }
+  // set equality operations
+  // map/foreach/filter/reduce
+  public filter(
+      callbackFn: (item: K) => boolean
+  ) {
+    const out = new IndexedSortedArraySet<K>(this.bucketSize, this.compare)
+    for (const item of this) {
+      if (callbackFn(item)) {
+        out.append(item)
+      }
+    }
+    return out
+  }
+
+  public map<V>(
+      callbackFn: (item: K) => V,
+      newCmp?: (a: V, b: V) => number
+  ) {
+    const out = new IndexedSortedArraySet<V>(this.bucketSize, newCmp)
+    for (const item of this) {
+      out.push(callbackFn(item))
+    }
+    return out
+  }
+
+  public reduce<V>(
+      callbackFn: (accumulator: V, currentValue: K, currentIndex: number) => V,
+      initialValue: V,
+  ) {
+    let acc = initialValue
+    let currentPosition = 0;
+    for (const item of this) {
+      acc = callbackFn(acc, item, currentPosition)
+      currentPosition += 1;
+    }
+    return acc
   }
 }

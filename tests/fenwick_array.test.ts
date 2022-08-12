@@ -1,4 +1,4 @@
-import { FenwickArray} from "../src/data_structures/fenwick_array";
+import { FenwickArray} from "../src/data_structures/implementations/fenwick_array";
 
 describe("FenwickArray", () => {
   describe("constructor", () => {

@@ -1,4 +1,4 @@
-import {indexOf, defaultComparator, mostSignificantBit, leastSignificantBit} from "../src/utils/utils";
+import {indexOf, defaultComparator, mostSignificantBit, leastSignificantBit} from "../src/data_structures/utils/utils";
 
 describe("indexOf", () => {
     describe("returns the expected positions", () => {

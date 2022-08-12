@@ -1,5 +1,5 @@
-import { SortedArraySet } from "./src/data_structures/sorted_array.ts";
-import { FenwickArray } from "./src/data_structures/fenwick_array.ts";
+import { SortedArraySet } from "./src/data_structures/implementations/sorted_array.ts";
+import { FenwickArray } from "./src/data_structures/implementations/fenwick_array.ts";
 
 class IndexedOrderedSet {
   buckets = [];

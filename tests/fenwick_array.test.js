@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fenwick_array_1 = require("../src/data_structures/fenwick_array");
+const fenwick_array_1 = require("../src/data_structures/implementations/fenwick_array");
 describe("FenwickArray", () => {
     describe("constructor", () => {
         it("correctly initializes the array as expected", () => {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const sorted_set_1 = require("../src/data_structures/sorted_set");
+const sorted_set_1 = require("../src/data_structures/implementations/sorted_set");
 // That's how simple it is to morph it into an array.
 function flattenBuckets(indexedSortedArraySet) {
     let out = new Array();
@@ -15,7 +15,10 @@ describe("IndexedSortedArraySet", () => {
     describe("push", () => {
         describe("adds and returns undefined if an attempt to add a duplicate occurs", () => {
             const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
-            const cases = [[1, 1], [1, undefined]];
+            const cases = [
+                [1, 1],
+                [1, undefined],
+            ];
             test.each(cases)("adding %d returns %d", (value, out) => {
                 expect(indexedSortedArraySet.push(value)).toEqual(out);
             });
@@ -35,7 +38,9 @@ describe("IndexedSortedArraySet", () => {
             for (const item of [3, 1, 2, 4, 5, 10]) {
                 indexedSortedArraySet.push(item);
             }
-            expect(flattenBuckets(indexedSortedArraySet)).toEqual([1, 2, 3, 4, 5, 10]);
+            expect(flattenBuckets(indexedSortedArraySet)).toEqual([
+                1, 2, 3, 4, 5, 10,
+            ]);
         });
     });
     describe("locate", () => {
@@ -53,7 +58,10 @@ describe("IndexedSortedArraySet", () => {
         describe("correctly checks for invalid boundaries", () => {
             const extendedIndexedSortedArraySet = new ExtendedIndexedSortedArraySet(2);
             extendedIndexedSortedArraySet.pushExtended(1);
-            const cases = [[-1, undefined], [1, undefined]];
+            const cases = [
+                [-1, undefined],
+                [1, undefined],
+            ];
             test.each(cases)("locating %d returns %d", (nth, location) => {
                 expect(extendedIndexedSortedArraySet.locateExtended(nth)).toEqual(location);
             });
@@ -69,7 +77,7 @@ describe("IndexedSortedArraySet", () => {
                 [1, 2, [0, 1]],
                 [3, 4, [1, 1]],
                 [4, 5, [2, 0]],
-                [5, 10, [2, 1]]
+                [5, 10, [2, 1]],
             ];
             test.each(cases)("%d is in bucket %d at the %d position", (nth, value, [expectedBucketNumber, expectedPositionInBucket]) => {
                 const locatingAttempt = extendedIndexedSortedArraySet.locateExtended(nth);
@@ -146,7 +154,7 @@ describe("IndexedSortedArraySet", () => {
                 [A, A, A],
                 [B, B, B],
                 [B, emptySet, emptySet],
-                [A, emptySet, emptySet]
+                [A, emptySet, emptySet],
             ];
             test.each(cases)("%s ∩ %s = %s", (L, R, LIR) => {
                 expect(flattenBuckets(L.intersection(R))).toEqual(flattenBuckets(LIR));
@@ -176,7 +184,7 @@ describe("IndexedSortedArraySet", () => {
                 [A, A, A],
                 [B, B, B],
                 [B, emptySet, B],
-                [A, emptySet, A]
+                [A, emptySet, A],
             ];
             test.each(cases)("%s ∪ %s = %s", (L, R, LUR) => {
                 expect(flattenBuckets(L.union(R))).toEqual(flattenBuckets(LUR));
@@ -210,9 +218,9 @@ describe("IndexedSortedArraySet", () => {
                 [A, A, emptySet],
                 [B, B, emptySet],
                 [B, emptySet, B],
-                [A, emptySet, A]
+                [A, emptySet, A],
             ];
-            test.each(cases)("%s \ %s = %s", (L, R, LDR) => {
+            test.each(cases)("%s  %s = %s", (L, R, LDR) => {
                 expect(flattenBuckets(L.difference(R))).toEqual(flattenBuckets(LDR));
             });
         });
@@ -240,7 +248,7 @@ describe("IndexedSortedArraySet", () => {
                 [A, A, emptySet],
                 [B, B, emptySet],
                 [B, emptySet, B],
-                [A, emptySet, A]
+                [A, emptySet, A],
             ];
             test.each(cases)("%s Δ %s = %s", (L, R, LDR) => {
                 expect(flattenBuckets(L.symmetricDifference(R))).toEqual(flattenBuckets(LDR));
@@ -261,7 +269,7 @@ describe("IndexedSortedArraySet", () => {
             const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
             const cases = [
                 [A, flattenBuckets(A)],
-                [emptySet, []]
+                [emptySet, []],
             ];
             test.each(cases)(`iterating %s yields %s`, (L, R) => {
                 const iterationResult = new Array();
@@ -270,6 +278,79 @@ describe("IndexedSortedArraySet", () => {
                 }
                 expect(iterationResult).toEqual(R);
             });
+        });
+    });
+    describe("delete", () => {
+        describe("deletes and returns undefined if an attempt to delete something that doesn't exist occurs", () => {
+            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            indexedSortedArraySet.push(1);
+            const cases = [
+                [1, 1],
+                [1, undefined],
+            ];
+            test.each(cases)("deleting %d returns %d", (value, out) => {
+                expect(indexedSortedArraySet.delete(value)).toEqual(out);
+            });
+        });
+        describe("maintains the underlying sorted order", () => {
+            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [3, 1, 2, 4, 5, 10]) {
+                indexedSortedArraySet.push(item);
+            }
+            const cases = [
+                [1, 1],
+                [2, 2],
+                [3, 3],
+                [4, 4],
+                [5, 5],
+                [10, 10],
+            ];
+            test.each(cases)("deleting %d returns %d", (value, out) => {
+                expect(indexedSortedArraySet.delete(value)).toEqual(out);
+            });
+        });
+    });
+    describe("remove", () => {
+        describe("removes and returns undefined if an attempt to remove something that doesn't exist occurs", () => {
+            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            indexedSortedArraySet.push(1);
+            const cases = [
+                [0, 1],
+                [0, undefined],
+            ];
+            test.each(cases)("removing %d returns %d", (value, out) => {
+                expect(indexedSortedArraySet.remove(value)).toEqual(out);
+            });
+        });
+        describe("maintains the underlying sorted order", () => {
+            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [3, 1, 2, 4, 5, 10]) {
+                indexedSortedArraySet.push(item);
+            }
+            const cases = [
+                [0, 1],
+                [0, 2],
+                [0, 3],
+                [0, 4],
+                [0, 5],
+                [0, 10],
+            ];
+            test.each(cases)("removing %d returns %d", (value, out) => {
+                expect(indexedSortedArraySet.remove(value)).toEqual(out);
+            });
+        });
+    });
+    describe("reduce", () => {
+        describe("works as expected", () => {
+            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            for (const item of [3, 1, 2, 4, 5, 10]) {
+                indexedSortedArraySet.push(item);
+            }
+            expect(indexedSortedArraySet.reduce((previousValue, currentValue) => {
+                return previousValue + currentValue;
+            }, 0)).toEqual(flattenBuckets(indexedSortedArraySet).reduce((previousValue, currentValue) => {
+                return previousValue + currentValue;
+            }, 0));
         });
     });
 });
