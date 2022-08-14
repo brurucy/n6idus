@@ -1,4 +1,4 @@
-import { IndexedSortedArraySet } from "../src/data_structures/implementations/sorted_set";
+import IndexedSortedArraySet from "../sorted_set.js";
 
 // That's how simple it is to morph it into an array.
 function flattenBuckets<K>(

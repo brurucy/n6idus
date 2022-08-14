@@ -3,30 +3,45 @@
   "version": "0.1.0",
   "type": "module",
   "description": "A collection of novel performance-oriented data structures",
-  "main": "n6idus.js",
+  "main": "sorted_set.js",
+  "types": "sorted_set.d.ts",
+  "files": [
+    "sorted_set.js",
+    "sorted_set.d.ts",
+    "sorted_array.js",
+    "sorted_array.d.ts",
+    "fenwick_array.js",
+    "fenwick_array.d.ts",
+    "utils.js",
+    "utils.d.ts",
+    "README.md"
+  ],
+  "keywords": [
+    "sorted",
+    "set",
+    "collection",
+    "optimized"
+  ],
   "bugs": {
     "url": "https://github.com/brurucy/n6idus/issues"
   },
   "homepage": "https://github.com/brurucy/n6idus#readme",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "tsc"
   },
   "author": "Rucy",
   "license": "ISC",
+  "dependencies": {},
   "devDependencies": {
+    "typescript": "^4.7.4",
     "@types/jest": "^28.1.6",
-    "bintrees": "^1.0.2",
-    "collections": "^5.1.12",
-    "csv-stringify": "^6.2.0",
     "eslint": "^8.20.0",
     "eslint-config-pipedrive": "^13.0.0",
     "eslint-config-prettier": "^8.3.0",
-    "functional-red-black-tree": "^1.0.1",
     "jest": "^28.1.3",
-    "microtime": "^3.0.0",
     "prettier": "^2.3.2",
-    "sorted-btree": "^1.5.0",
     "ts-jest": "^28.0.7"
   },
   "jest": {

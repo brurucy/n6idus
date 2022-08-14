@@ -1,4 +1,4 @@
-import { defaultComparator, indexOf } from "../utils/utils";
+import { defaultComparator, indexOf } from "./utils.js";
 
 export class SortedArraySet<K = any> {
   bucket: K[];

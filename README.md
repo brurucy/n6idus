@@ -6,50 +6,7 @@
 
   1. Intro
   2. Why should you use N6idus?
-  3. The API
-     * push(item)
-     * has(item)
-     * select(ith)
-     * delete(item)
-     * deleteByindex(ith)
-     * filter(callbackFn, cmp, bucketSize)
-     * map(callbackFn, cmp, bucketSize)
-     * reduce(callbackFn, acc)
-     * reduceRight(callbackFn, acc)
-     * forEach(callbackFn)
-     * makeForwardCursor()
-     * makeBackwardsCursor()
-     * makeForwardCursorByIndex(ith, ith)
-     * makeBackwardsCursorByIndex(ith, ith)
-     * makeForwardCursorByValue(item, item)
-     * makeBackwardsCursorByValue(item, item)
-     * union(otherIndexedOrderedSet)
-     * intersection(otherIndexedOrderedSet)
-     * difference(otherIndexedOrderedSet)
-     * symmetricDifference(otherIndexedOrderedSet)
-     * sameAs(otherIndexedOrderedSet)
-     * isSuperset(otherIndexedOrderedSet)
-     * isProperSuperset(otherIndexedOrderedSet)
-     * isSubset(otherIndexedOrderedSet)
-     * isProperSubset(otherIndexedOrderedSet)
-     * isDisjointWith(otherIndexedOrderedSet)
-     * isEmpty(otherIndexedOrderedSet)
-     * getMin()
-     * getMax()
-     * pop()
-     * shift()
-     * sliceByValue(item, item)
-     * spliceByValue(item, item)
-     * sliceByIndex(ith, ith)
-     * spliceByIndex(ith, ith)
-     * toArray()
-     * filterToArray(callbackFn)
-     * mapToArray(callbackFn)
-     * every(callbackFn)
-     * some(callbackFn)
-     * nextHigherKey(item)
-     * nextLowerKey(item)
-  4. Benchmarks
+  3. Benchmarks
      * Adding in sequential order
      * Searching in sequential order
      * Getting the i-th element in sequential order
@@ -63,7 +20,7 @@
 
 N6idus is an opinionated collection of experimental data structures optimized for performance.
 
-At the moment we provide a single data structure, an **Indexed Sorted Array**.
+At the moment we provide a single data structure, an **Indexed Sorted Array Set**.
 
 Here are the use cases:
 
@@ -73,7 +30,7 @@ Here are the use cases:
 
 ### Why should you use N6idus?
 
-Our **Indexed Ordered Set** is fast. Really, **Really** fast.
+Our **Indexed Sorted Set** is fast. Really, **Really** fast.
 
 In fact, just go to the benchmarks session and see. It's around twice as fast as the currently fastest search tree.
 
@@ -97,7 +54,7 @@ Here are the worst-case complexities, with **B** being the **load factor/bucket 
 
 ### Benchmarks
 
-#### Indexed Ordered Set
+#### **Indexed Sorted Array Set**
 
 We've benchmarked the **Flat Bucketed Array**, with differing **Load Factor** values against the **most popular** collections for sorted sets:
 

@@ -1,10 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const sorted_array_1 = require("../src/data_structures/implementations/sorted_array");
+import { SortedArraySet } from "../sorted_array.js";
 describe("SortedArraySet", () => {
     describe("add", () => {
         describe("does not add if already in, updates the maximum element correctly", () => {
-            const sortedArraySet = new sorted_array_1.SortedArraySet();
+            const sortedArraySet = new SortedArraySet();
             const cases = [[1, 1], [3, 3], [2, 3]];
             test.each(cases)("add %d result of add again %d expected max %d", (valueToAdd, expectedMax) => {
                 expect(sortedArraySet.add(valueToAdd)).toEqual(valueToAdd);
@@ -15,7 +13,7 @@ describe("SortedArraySet", () => {
     });
     describe("delete", () => {
         describe("does not delete if not in, updates the maximum element correctly", () => {
-            const sortedArraySet = new sorted_array_1.SortedArraySet();
+            const sortedArraySet = new SortedArraySet();
             for (let i = 1; i <= 3; i++) {
                 sortedArraySet.add(i);
             }
@@ -29,7 +27,7 @@ describe("SortedArraySet", () => {
     });
     describe("has", () => {
         describe("correctly asserts that an item is in", () => {
-            const sortedArraySet = new sorted_array_1.SortedArraySet();
+            const sortedArraySet = new SortedArraySet();
             for (let i = 1; i <= 3; i++) {
                 sortedArraySet.add(i);
             }
@@ -45,7 +43,7 @@ describe("SortedArraySet", () => {
     });
     describe("select", () => {
         describe("correctly checks for boundaries", () => {
-            const sortedArraySet = new sorted_array_1.SortedArraySet();
+            const sortedArraySet = new SortedArraySet();
             sortedArraySet.add(1);
             const cases = [1, -1];
             test.each(cases)("index %d is out of bounds of array with length 1", (index) => {
@@ -53,7 +51,7 @@ describe("SortedArraySet", () => {
             });
         });
         describe("returns the expected value", () => {
-            const sortedArraySet = new sorted_array_1.SortedArraySet();
+            const sortedArraySet = new SortedArraySet();
             for (let i = 3; i >= 1; i--) {
                 sortedArraySet.add(i);
             }
@@ -65,7 +63,7 @@ describe("SortedArraySet", () => {
     });
     describe("remove", () => {
         describe("does not remove if out of bounds, updates the maximum element correctly", () => {
-            const sortedArraySet = new sorted_array_1.SortedArraySet();
+            const sortedArraySet = new SortedArraySet();
             for (let i = 3; i >= 1; i--) {
                 sortedArraySet.add(i);
             }
@@ -77,4 +75,3 @@ describe("SortedArraySet", () => {
         });
     });
 });
-//# sourceMappingURL=sorted_array.test.js.map

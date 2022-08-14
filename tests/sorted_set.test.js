@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const sorted_set_1 = require("../src/data_structures/implementations/sorted_set");
+import IndexedSortedArraySet from "../sorted_set.js";
 // That's how simple it is to morph it into an array.
 function flattenBuckets(indexedSortedArraySet) {
     let out = new Array();
@@ -14,7 +12,7 @@ function flattenBuckets(indexedSortedArraySet) {
 describe("IndexedSortedArraySet", () => {
     describe("push", () => {
         describe("adds and returns undefined if an attempt to add a duplicate occurs", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             const cases = [
                 [1, 1],
                 [1, undefined],
@@ -34,7 +32,7 @@ describe("IndexedSortedArraySet", () => {
         // The "bucket size" property defines the point in which this splitting will occur. If we set it to 2, this means that
         // each underlying bucket will call `balance` once its length is greater than 2.
         describe("maintains the underlying sorted order", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             for (const item of [3, 1, 2, 4, 5, 10]) {
                 indexedSortedArraySet.push(item);
             }
@@ -44,7 +42,7 @@ describe("IndexedSortedArraySet", () => {
         });
     });
     describe("locate", () => {
-        class ExtendedIndexedSortedArraySet extends sorted_set_1.IndexedSortedArraySet {
+        class ExtendedIndexedSortedArraySet extends IndexedSortedArraySet {
             constructor(bucketSize) {
                 super(bucketSize);
             }
@@ -101,7 +99,7 @@ describe("IndexedSortedArraySet", () => {
     describe("make cursor", () => {
         const elementsToBeInserted = [3, 1, 2, 4, 5, 10];
         describe("traverses the entire structure forward by position", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             for (const item of elementsToBeInserted) {
                 indexedSortedArraySet.push(item);
             }
@@ -116,7 +114,7 @@ describe("IndexedSortedArraySet", () => {
             });
         });
         describe("traverses the entire structure backwards by position", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             for (const item of elementsToBeInserted) {
                 indexedSortedArraySet.push(item);
             }
@@ -133,8 +131,8 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("intersection", () => {
         describe("satisfies the definition of intersection", () => {
-            const A = new sorted_set_1.IndexedSortedArraySet(2);
-            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const A = new IndexedSortedArraySet(2);
+            const B = new IndexedSortedArraySet(2);
             const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
             const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
             for (const item of elementsToBeInsertedA) {
@@ -143,11 +141,11 @@ describe("IndexedSortedArraySet", () => {
             for (const item of elementsToBeInsertedB) {
                 B.push(item);
             }
-            const AIB = new sorted_set_1.IndexedSortedArraySet(2);
+            const AIB = new IndexedSortedArraySet(2);
             for (const item of [1, 2, 5, 10]) {
                 AIB.push(item);
             }
-            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const emptySet = new IndexedSortedArraySet(2);
             const cases = [
                 [A, B, AIB],
                 [B, A, AIB],
@@ -163,8 +161,8 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("union", () => {
         describe("satisfies the definition of union", () => {
-            const A = new sorted_set_1.IndexedSortedArraySet(2);
-            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const A = new IndexedSortedArraySet(2);
+            const B = new IndexedSortedArraySet(2);
             const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
             const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
             for (const item of elementsToBeInsertedA) {
@@ -173,11 +171,11 @@ describe("IndexedSortedArraySet", () => {
             for (const item of elementsToBeInsertedB) {
                 B.push(item);
             }
-            const AUB = new sorted_set_1.IndexedSortedArraySet(2);
+            const AUB = new IndexedSortedArraySet(2);
             for (const item of [1, 2, 3, 4, 5, 6, 10, 11]) {
                 AUB.push(item);
             }
-            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const emptySet = new IndexedSortedArraySet(2);
             const cases = [
                 [A, B, AUB],
                 [B, A, AUB],
@@ -193,8 +191,8 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("difference", () => {
         describe("satisfies the definition of difference", () => {
-            const A = new sorted_set_1.IndexedSortedArraySet(2);
-            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const A = new IndexedSortedArraySet(2);
+            const B = new IndexedSortedArraySet(2);
             const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
             const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
             for (const item of elementsToBeInsertedA) {
@@ -203,15 +201,15 @@ describe("IndexedSortedArraySet", () => {
             for (const item of elementsToBeInsertedB) {
                 B.push(item);
             }
-            const ADB = new sorted_set_1.IndexedSortedArraySet(2);
+            const ADB = new IndexedSortedArraySet(2);
             for (const item of [3, 4]) {
                 ADB.push(item);
             }
-            const BDA = new sorted_set_1.IndexedSortedArraySet(2);
+            const BDA = new IndexedSortedArraySet(2);
             for (const item of [6, 11]) {
                 BDA.push(item);
             }
-            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const emptySet = new IndexedSortedArraySet(2);
             const cases = [
                 [A, B, ADB],
                 [B, A, BDA],
@@ -227,8 +225,8 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("symmetricDifference", () => {
         describe("satisfies the definition of symmetricDifference", () => {
-            const A = new sorted_set_1.IndexedSortedArraySet(2);
-            const B = new sorted_set_1.IndexedSortedArraySet(2);
+            const A = new IndexedSortedArraySet(2);
+            const B = new IndexedSortedArraySet(2);
             const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
             const elementsToBeInsertedB = [1, 2, 5, 10, 11, 6];
             for (const item of elementsToBeInsertedA) {
@@ -237,11 +235,11 @@ describe("IndexedSortedArraySet", () => {
             for (const item of elementsToBeInsertedB) {
                 B.push(item);
             }
-            const ADB = new sorted_set_1.IndexedSortedArraySet(2);
+            const ADB = new IndexedSortedArraySet(2);
             for (const item of [3, 4, 6, 11]) {
                 ADB.push(item);
             }
-            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const emptySet = new IndexedSortedArraySet(2);
             const cases = [
                 [A, B, ADB],
                 [B, A, ADB],
@@ -257,7 +255,7 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("Symbol.iterator", () => {
         describe("correctly iterates from the beginning til the end", () => {
-            const A = new sorted_set_1.IndexedSortedArraySet(2);
+            const A = new IndexedSortedArraySet(2);
             const elementsToBeInsertedA = [3, 1, 2, 4, 5, 10];
             for (const item of elementsToBeInsertedA) {
                 A.push(item);
@@ -266,7 +264,7 @@ describe("IndexedSortedArraySet", () => {
             for (const item of A) {
                 iterationResult.push(item);
             }
-            const emptySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const emptySet = new IndexedSortedArraySet(2);
             const cases = [
                 [A, flattenBuckets(A)],
                 [emptySet, []],
@@ -282,7 +280,7 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("delete", () => {
         describe("deletes and returns undefined if an attempt to delete something that doesn't exist occurs", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             indexedSortedArraySet.push(1);
             const cases = [
                 [1, 1],
@@ -293,7 +291,7 @@ describe("IndexedSortedArraySet", () => {
             });
         });
         describe("maintains the underlying sorted order", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             for (const item of [3, 1, 2, 4, 5, 10]) {
                 indexedSortedArraySet.push(item);
             }
@@ -312,7 +310,7 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("remove", () => {
         describe("removes and returns undefined if an attempt to remove something that doesn't exist occurs", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             indexedSortedArraySet.push(1);
             const cases = [
                 [0, 1],
@@ -323,7 +321,7 @@ describe("IndexedSortedArraySet", () => {
             });
         });
         describe("maintains the underlying sorted order", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             for (const item of [3, 1, 2, 4, 5, 10]) {
                 indexedSortedArraySet.push(item);
             }
@@ -342,7 +340,7 @@ describe("IndexedSortedArraySet", () => {
     });
     describe("reduce", () => {
         describe("works as expected", () => {
-            const indexedSortedArraySet = new sorted_set_1.IndexedSortedArraySet(2);
+            const indexedSortedArraySet = new IndexedSortedArraySet(2);
             for (const item of [3, 1, 2, 4, 5, 10]) {
                 indexedSortedArraySet.push(item);
             }
@@ -354,4 +352,3 @@ describe("IndexedSortedArraySet", () => {
         });
     });
 });
-//# sourceMappingURL=sorted_set.test.js.map

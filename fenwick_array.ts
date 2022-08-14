@@ -1,4 +1,4 @@
-import {leastSignificantBit, mostSignificantBit} from "../utils/utils";
+import {leastSignificantBit, mostSignificantBit} from "./utils.js";
 
 type anyToInt<K> = (a: K) => number;
 

@@ -5,8 +5,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "target": "ES6",
-    "sourceMap": true,
-    "module": "commonjs"
-    "compilerOptions": true
+    "sourceMap": false,
+    "module": "node16",
+    "declaration": true,
+    "esModuleInterop": true,
+    "alwaysStrict": true
   }
 }

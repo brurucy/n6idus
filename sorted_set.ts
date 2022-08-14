@@ -1,6 +1,6 @@
-import { SortedArraySet } from "./sorted_array";
-import { FenwickArray } from "./fenwick_array";
-import { indexOf, defaultComparator } from "../utils/utils";
+import { SortedArraySet } from "./sorted_array.js";
+import { FenwickArray } from "./fenwick_array.js";
+import { indexOf, defaultComparator } from "./utils.js";
 
 type PositionAndValue<K> = [number, K | undefined];
 type PositionAndValueIterator<K> = IteratorResult<PositionAndValue<K>, void>;
@@ -26,7 +26,7 @@ function drainGenerator<K>(
   }
 }
 
-export class IndexedSortedArraySet<K = any> implements Iterable<K> {
+export default class IndexedSortedArraySet<K = any> implements Iterable<K> {
   public readonly buckets: SortedArraySet<K>[];
   private readonly bucketSize: number;
   private readonly compare: (a: K, b: K) => number;
@@ -125,7 +125,7 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     )
   }
 
-  push(item: K): K | undefined {
+  public push(item: K): K | undefined {
     let firstLevelIndex = this.bucketsIndexOf(item);
     if (this.buckets[firstLevelIndex] === undefined) {
       firstLevelIndex = firstLevelIndex - 1;
@@ -146,7 +146,7 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
   // Only when you are absolutely sure that you are adding an element that:
   // 1. Is not already in
   // 2. Is greater than all other elements currently in
-  append(item: K): K {
+  public append(item: K): K {
     let lastBucketPosition = this.buckets.length - 1;
     if (this.buckets[lastBucketPosition].length() < this.bucketSize - 1) {
       this.buckets[lastBucketPosition].bucket.push(item);
@@ -161,7 +161,7 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     return item;
   }
 
-  delete(item: K): K | undefined {
+  public delete(item: K): K | undefined {
     let firstLevelIndex = this.bucketsIndexOf(item);
     if (this.buckets[firstLevelIndex] === undefined) {
       firstLevelIndex = firstLevelIndex - 1
@@ -182,7 +182,7 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     return deletion
   }
 
-  remove(nth: number): K | undefined {
+  public remove(nth: number): K | undefined {
     const coordinates = this.locate(nth)
     if (coordinates === undefined) {
       return undefined
@@ -246,6 +246,9 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
     return undefined;
   }
 
+  /* Creates a possibly infinite cursor that can have its traversal direction
+     changed at any given time
+   */
   public *makeCursor(
     from: number,
     forward: boolean
@@ -350,8 +353,8 @@ export class IndexedSortedArraySet<K = any> implements Iterable<K> {
   ): IndexedSortedArraySet<K> {
     return this.binaryIteratingOperation(
         otherIndexedSortedArraySet,
-        true,
         false,
+        true,
         false,
         false,
         false,

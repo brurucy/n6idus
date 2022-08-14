@@ -13,3 +13,4 @@ node_modules
 *.csv
 .Rproj.user
 *bench.js
+*.js

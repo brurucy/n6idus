@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const fenwick_array_1 = require("../src/data_structures/implementations/fenwick_array");
+import { FenwickArray } from "../fenwick_array.js";
 describe("FenwickArray", () => {
     describe("constructor", () => {
         it("correctly initializes the array as expected", () => {
@@ -13,14 +11,14 @@ describe("FenwickArray", () => {
             // The prefix sum until the third element, will be computed in runtime, logarithmically.
             // That's the gist of the Fenwick Array, logarithmic insertions with logarithmic prefix sum computation.
             let fenwickArray = [1, 7, 3, 19, 2];
-            let index = new fenwick_array_1.FenwickArray(lengths);
+            let index = new FenwickArray(lengths);
             expect(fenwickArray).toEqual(index.innerStructure);
         });
     });
     describe("prefixSum", () => {
         describe("calculates the expected prefix sum", () => {
             let lengths = [1, 6, 3, 9, 2];
-            let fenwickArray = new fenwick_array_1.FenwickArray(lengths);
+            let fenwickArray = new FenwickArray(lengths);
             const cases = [[0, 0], [1, 1], [2, 7], [3, 10], [4, 19], [5, 21], [6, undefined]];
             // The prefix sum up until the zeroth element is 0, since there is nothing before it
             // The prefix sum up until an index larger than the length is undefined, since every element after the length - 1
@@ -34,7 +32,7 @@ describe("FenwickArray", () => {
         describe("correctly adjusts the partial sums", () => {
             let lengths = [1, 6, 3, 9, 2];
             // innerStructure is [1, 7, 3, 19, 2]
-            let fenwickArray = new fenwick_array_1.FenwickArray(lengths);
+            let fenwickArray = new FenwickArray(lengths);
             // Once again, a neat aspect about the Fenwick Array is that by increasing the value of an index
             // Only a logarithmic number of other indexes will have to be changed, instead of the whole innerStructure
             fenwickArray.increaseLength(0);
@@ -49,7 +47,7 @@ describe("FenwickArray", () => {
         describe("correctly adjusts the partial sums", () => {
             let lengths = [1, 6, 3, 9, 2];
             // innerStructure is [1, 7, 3, 19, 2]
-            let fenwickArray = new fenwick_array_1.FenwickArray(lengths);
+            let fenwickArray = new FenwickArray(lengths);
             // The rationale is equivalent to the previous test
             fenwickArray.decreaseLength(0);
             const cases = [[0, 0], [1, 6], [2, 3], [3, 18], [4, 2]];
@@ -61,7 +59,7 @@ describe("FenwickArray", () => {
     describe("indexOf", () => {
         describe("returns the expected position of the given prefix sum", () => {
             let lengths = [1, 6, 3, 9, 2];
-            let fenwickArray = new fenwick_array_1.FenwickArray(lengths);
+            let fenwickArray = new FenwickArray(lengths);
             // This is, by far, the most useful aspect about the Fenwick Array, and what makes it suitable to be used
             // as an index. Given a prefix sum, indexOf returns the correct position in the inner structure of the Fenwick
             // Array that the prefix sum would inhabit
@@ -76,4 +74,3 @@ describe("FenwickArray", () => {
         });
     });
 });
-//# sourceMappingURL=fenwick_array.test.js.map
