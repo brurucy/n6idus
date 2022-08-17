@@ -1,6 +1,6 @@
 {
   "name": "n6idus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "A collection of novel performance-oriented data structures",
   "main": "sorted_set.js",
@@ -46,7 +46,9 @@
   },
   "jest": {
     "collectCoverage": true,
-    "extensionsToTreatAsEsm": [".ts"],
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
     "globals": {
       "ts-jest": {
         "useESM": true
@@ -61,7 +63,9 @@
       "^.+\\.ts?$": "ts-jest"
     },
     "testEnvironment": "node",
-    "transformIgnorePatterns": ["<rootDir>/node_modules/"]
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/"
+    ]
   },
   "volta": {
     "node": "18.7.0"
