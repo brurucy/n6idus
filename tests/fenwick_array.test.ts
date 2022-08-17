@@ -1,4 +1,4 @@
-import { FenwickArray} from "../fenwick_array.js";
+import { FenwickArray } from "../fenwick_array.js";
 
 describe("FenwickArray", () => {
   describe("constructor", () => {
