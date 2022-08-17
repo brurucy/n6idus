@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "target": "ES6",
+    "sourceMap": false,
+    "module": "Node16",
+    "declaration": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": false,
+    "alwaysStrict": true,
+    "moduleResolution": "Node16"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "tests"]
+}
